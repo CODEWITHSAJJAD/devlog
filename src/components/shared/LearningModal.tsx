@@ -13,6 +13,11 @@ import {
   Eye,
   FileCode,
   X,
+  Bold,
+  Italic,
+  Code,
+  Quote,
+  List,
 } from 'lucide-react';
 
 interface LearningModalProps {
@@ -20,6 +25,8 @@ interface LearningModalProps {
   mode: 'view' | 'edit' | 'create';
   learning: Learning | null;
   initialTaskId?: string;
+  defaultTaskId?: string;
+  defaultTitle?: string;
   onClose: () => void;
   onSave?: (
     payload: { taskId: string; title: string; content: string; tags: string[] },
@@ -34,15 +41,19 @@ export const LearningModal: React.FC<LearningModalProps> = ({
   mode,
   learning,
   initialTaskId,
+  defaultTaskId,
+  defaultTitle,
   onClose,
   onSave,
   onDelete,
   onSwitchToEdit,
 }) => {
+  const effectiveTaskId = defaultTaskId || initialTaskId || '';
+
   // Form State
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [taskId, setTaskId] = useState(initialTaskId || '');
+  const [taskId, setTaskId] = useState(effectiveTaskId);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
@@ -62,16 +73,16 @@ export const LearningModal: React.FC<LearningModalProps> = ({
       setTags(learning.tags || []);
       setError(null);
     } else if (mode === 'create') {
-      setTitle('');
+      setTitle(defaultTitle || '');
       setContent('');
-      setTaskId(initialTaskId || '');
+      setTaskId(effectiveTaskId);
       setTags([]);
       setError(null);
     }
-  }, [learning, mode, initialTaskId]);
+  }, [learning, mode, effectiveTaskId, defaultTitle]);
 
   useEffect(() => {
-    if (isOpen && mode === 'create' && !initialTaskId) {
+    if (isOpen && mode === 'create' && !effectiveTaskId) {
       setLoadingTasks(true);
       apiFetch<Task[]>('/api/tasks')
         .then((res) => {
@@ -84,7 +95,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
         })
         .finally(() => setLoadingTasks(false));
     }
-  }, [isOpen, mode, initialTaskId, taskId]);
+  }, [isOpen, mode, effectiveTaskId, taskId]);
 
   if (!isOpen) return null;
 
@@ -106,6 +117,10 @@ export const LearningModal: React.FC<LearningModalProps> = ({
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const insertMarkdownSnippet = (prefix: string, suffix: string = '') => {
+    setContent((prev) => `${prev}${prefix}${suffix}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -152,7 +167,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
       >
         <div className="space-y-5">
           {/* Action Ribbon */}
-          <div className="flex items-center justify-between pb-3 border-b border-white/5">
+          <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
             <div className="flex items-center gap-1.5 flex-wrap">
               {learning.tags && learning.tags.length > 0 ? (
                 learning.tags.map((tag) => (
@@ -172,7 +187,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
               <button
                 type="button"
                 onClick={handleCopyMarkdown}
-                className="inline-flex items-center px-2.5 py-1 text-xs text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5"
+                className="inline-flex items-center px-2.5 py-1 text-xs text-slate-300 hover:text-white bg-white/[0.05] hover:bg-white/10 rounded-lg transition-colors border border-white/[0.06] active:scale-95"
                 title="Copy note"
               >
                 {copied ? (
@@ -192,7 +207,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSwitchToEdit(learning)}
-                  className="inline-flex items-center px-2.5 py-1 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-lg transition-colors border border-indigo-500/20"
+                  className="inline-flex items-center px-2.5 py-1 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-lg transition-colors border border-indigo-500/20 active:scale-95"
                 >
                   <Edit2 className="w-3.5 h-3.5 mr-1" />
                   Edit
@@ -206,7 +221,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
                     onClose();
                     onDelete(learning);
                   }}
-                  className="inline-flex items-center px-2.5 py-1 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition-colors border border-rose-500/20"
+                  className="inline-flex items-center px-2.5 py-1 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition-colors border border-rose-500/20 active:scale-95"
                 >
                   <Trash2 className="w-3.5 h-3.5 mr-1" />
                   Delete
@@ -216,16 +231,16 @@ export const LearningModal: React.FC<LearningModalProps> = ({
           </div>
 
           {/* Markdown Content Area */}
-          <div className="p-5 bg-[#0d0e12] border border-white/5 rounded-2xl max-h-[60vh] overflow-y-auto shadow-inner">
+          <div className="p-5 bg-[#0a0c12] border border-white/[0.06] rounded-2xl max-h-[60vh] overflow-y-auto shadow-inner">
             <MarkdownViewer content={learning.content} className="text-xs text-slate-200" />
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end pt-3 border-t border-white/5">
+          <div className="flex items-center justify-end pt-3 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-1.5 text-xs text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+              className="px-4 py-1.5 text-xs text-slate-300 hover:text-white bg-white/[0.05] hover:bg-white/10 rounded-lg transition-colors active:scale-95"
             >
               Close
             </button>
@@ -257,10 +272,10 @@ export const LearningModal: React.FC<LearningModalProps> = ({
           </div>
         )}
 
-        {/* Task Selection (When Creating from KB) */}
-        {mode === 'create' && !initialTaskId && (
+        {/* Task Selection (When Creating without pre-bound Task) */}
+        {mode === 'create' && !effectiveTaskId && (
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
               Associate with Task *
             </label>
             {loadingTasks ? (
@@ -275,10 +290,10 @@ export const LearningModal: React.FC<LearningModalProps> = ({
               <select
                 value={taskId}
                 onChange={(e) => setTaskId(e.target.value)}
-                className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors"
               >
                 {availableTasks.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#14161c]">
+                  <option key={t.id} value={t.id} className="bg-[#101217]">
                     TSK-{t.id.slice(0, 4).toUpperCase()}: {t.title}
                   </option>
                 ))}
@@ -289,24 +304,26 @@ export const LearningModal: React.FC<LearningModalProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">Learning Title *</label>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            Learning Title *
+          </label>
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. SQLite Foreign Key Enforcements in Cloudflare D1"
-            className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors shadow-inner"
+            className="w-full px-3.5 py-2.5 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors shadow-inner"
           />
         </div>
 
-        {/* Markdown Editor with Tabs */}
+        {/* Markdown Editor with Formatting Toolbar & Tabs */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-medium text-slate-300">
-              Technical Content (Markdown supported) *
+            <label className="text-xs font-semibold text-slate-300">
+              Technical Content (Markdown) *
             </label>
-            <div className="flex items-center bg-[#0d0e12] border border-white/10 rounded-lg p-0.5">
+            <div className="flex items-center bg-[#0a0c10] border border-white/10 rounded-lg p-0.5">
               <button
                 type="button"
                 onClick={() => setActiveTab('write')}
@@ -324,7 +341,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
                 onClick={() => setActiveTab('preview')}
                 className={`flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
                   activeTab === 'preview'
-                    ? 'bg-emerald-500/20 text-emerald-300'
+                    ? 'bg-emerald-500/20 text-emerald-300 font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -335,31 +352,79 @@ export const LearningModal: React.FC<LearningModalProps> = ({
           </div>
 
           {activeTab === 'write' ? (
-            <textarea
-              required
-              rows={8}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="### Root Cause&#10;Explain what failed and why.&#10;&#10;```typescript&#10;// Code snippet or resolution&#10;```&#10;&#10;### Key Takeaways&#10;- Lesson learned for future sprints."
-              className="w-full p-3 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono leading-relaxed transition-colors shadow-inner"
-            />
+            <div className="space-y-1.5">
+              {/* Markdown Helper Toolbar */}
+              <div className="flex items-center gap-1 px-2 py-1 bg-[#0a0c10] border border-white/[0.06] rounded-t-xl text-slate-400">
+                <button
+                  type="button"
+                  onClick={() => insertMarkdownSnippet('**bold text**')}
+                  className="p-1 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  title="Bold"
+                >
+                  <Bold className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertMarkdownSnippet('*italic text*')}
+                  className="p-1 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  title="Italic"
+                >
+                  <Italic className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertMarkdownSnippet('\n```typescript\n// code here\n```\n')}
+                  className="p-1 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  title="Code Block"
+                >
+                  <Code className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertMarkdownSnippet('\n> Quote\n')}
+                  className="p-1 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  title="Blockquote"
+                >
+                  <Quote className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertMarkdownSnippet('\n- List item\n')}
+                  className="p-1 hover:text-white rounded hover:bg-white/10 transition-colors"
+                  title="Bulleted List"
+                >
+                  <List className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <textarea
+                required
+                rows={8}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="### Root Cause&#10;Explain what failed and why.&#10;&#10;```typescript&#10;// Code snippet or resolution&#10;```&#10;&#10;### Key Takeaways&#10;- Lesson learned for future sprints."
+                className="w-full p-3.5 bg-[#0a0c10] border border-white/10 rounded-b-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono leading-relaxed transition-colors shadow-inner"
+              />
+            </div>
           ) : (
-            <div className="p-4 bg-[#0d0e12] border border-white/10 rounded-xl min-h-[12rem] max-h-[16rem] overflow-y-auto">
+            <div className="p-4 bg-[#0a0c10] border border-white/10 rounded-xl min-h-[12rem] max-h-[16rem] overflow-y-auto">
               {content.trim() ? (
                 <MarkdownViewer content={content} className="text-xs text-slate-200" />
               ) : (
-                <span className="text-xs text-slate-500 italic">No markdown entered yet.</span>
+                <div className="text-slate-600 text-xs italic">
+                  Markdown preview will render here once you write content.
+                </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Tag Input */}
+        {/* Tags */}
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
-            Tags (Categorization)
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            Knowledge Tags
           </label>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex gap-2">
             <div className="relative flex-1">
               <Tag className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
               <input
@@ -372,31 +437,31 @@ export const LearningModal: React.FC<LearningModalProps> = ({
                     handleAddTag();
                   }
                 }}
-                placeholder="Type tag (e.g. Cloudflare, SQLite, Drizzle) and press Enter"
-                className="w-full pl-8 pr-3 py-1.5 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                placeholder="e.g. database, sqlite, d1, security (press Enter)"
+                className="w-full pl-9 pr-3 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors shadow-inner"
               />
             </div>
             <button
               type="button"
               onClick={handleAddTag}
-              className="px-3 py-1.5 text-xs text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors font-medium"
+              className="px-3 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-medium rounded-xl border border-white/10 transition-colors"
             >
-              Add
+              Add Tag
             </button>
           </div>
 
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
+            <div className="flex flex-wrap gap-1.5 mt-2.5">
+              {tags.map((t) => (
                 <span
-                  key={tag}
-                  className="inline-flex items-center text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full"
+                  key={t}
+                  className="inline-flex items-center text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full"
                 >
-                  #{tag}
+                  #{t}
                   <button
                     type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="ml-1.5 text-slate-400 hover:text-white"
+                    onClick={() => handleRemoveTag(t)}
+                    className="ml-1 hover:text-white"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -406,27 +471,22 @@ export const LearningModal: React.FC<LearningModalProps> = ({
           )}
         </div>
 
-        {/* Submit Bar */}
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/5">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.06]">
           <button
             type="button"
             onClick={onClose}
-            disabled={isSubmitting}
-            className="px-3.5 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors active:scale-95"
           >
             Cancel
           </button>
           <button
             type="submit"
-            disabled={isSubmitting || !title.trim() || !content.trim() || !taskId}
-            className="flex items-center px-4 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
+            disabled={isSubmitting}
+            className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-[0_2px_10px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all flex items-center gap-1.5 disabled:opacity-50 active:scale-95"
           >
-            {isSubmitting && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
-            {isSubmitting
-              ? 'Saving...'
-              : mode === 'create'
-              ? 'Record Learning'
-              : 'Update Learning'}
+            {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {mode === 'create' ? 'Record Learning' : 'Save Changes'}
           </button>
         </div>
       </form>

@@ -5,7 +5,7 @@ import { MarkdownViewer } from '../shared/MarkdownViewer';
 import { DeleteConfirmModal } from '../shared/DeleteConfirmModal';
 import { useLearnings } from '../../hooks/useLearnings';
 import { toDateInputValue } from '../../utils/api';
-import { Sparkles, Trash2, BookOpen, Plus, Loader2 } from 'lucide-react';
+import { Sparkles, Trash2, BookOpen, Plus, Loader2, Calendar } from 'lucide-react';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -153,7 +153,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       >
         <div className="space-y-6">
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl">
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl font-mono">
               {error}
             </div>
           )}
@@ -161,27 +161,29 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           {/* Task Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Task Title *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Task Title *
+              </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Implement WebCrypto Password Hashing"
-                className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner"
+                className="w-full px-3.5 py-2.5 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner"
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Type</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Type</label>
                 <select
                   value={typeId}
                   onChange={(e) => setTypeId(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono"
                 >
                   {taskTypes.map((t) => (
-                    <option key={t.id} value={t.id} className="bg-[#14161c]">
+                    <option key={t.id} value={t.id} className="bg-[#101217]">
                       {t.label}
                     </option>
                   ))}
@@ -189,14 +191,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Status</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Status</label>
                 <select
                   value={statusId}
                   onChange={(e) => setStatusId(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono"
                 >
                   {taskStatuses.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-[#14161c]">
+                    <option key={s.id} value={s.id} className="bg-[#101217]">
                       {s.label}
                     </option>
                   ))}
@@ -204,14 +206,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Priority</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Priority</label>
                 <select
                   value={priorityId}
                   onChange={(e) => setPriorityId(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono"
                 >
                   {priorities.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-[#14161c]">
+                    <option key={p.id} value={p.id} className="bg-[#101217]">
                       {p.label}
                     </option>
                   ))}
@@ -220,17 +222,19 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Target Deadline</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" /> Target Deadline
+              </label>
               <input
                 type="date"
                 value={dueDateStr}
                 onChange={(e) => setDueDateStr(e.target.value)}
-                className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition-colors font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Description / Acceptance Criteria
               </label>
               <textarea
@@ -238,16 +242,16 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Technical specifications, acceptance criteria, or repro notes..."
-                className="w-full px-3 py-2 bg-[#0d0e12] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner"
+                className="w-full p-3.5 bg-[#0a0c10] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner leading-relaxed"
               />
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-white/5">
+            <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
               {isEditing && onDeleteTask ? (
                 <button
                   type="button"
                   onClick={() => setIsDeleteOpen(true)}
-                  className="inline-flex items-center px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition-colors border border-rose-500/20"
+                  className="inline-flex items-center px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl transition-colors border border-rose-500/20 active:scale-95"
                 >
                   <Trash2 className="w-3.5 h-3.5 mr-1.5" />
                   Delete Task
@@ -261,14 +265,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="px-3.5 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl transition-colors active:scale-95"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !title.trim()}
-                  className="flex items-center px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                  className="flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_10px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98] disabled:opacity-50"
                 >
                   {isSubmitting && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
                   {isSubmitting ? 'Saving...' : isEditing ? 'Update Task' : 'Create Task'}
@@ -291,7 +295,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsAddingLearning(true)}
-                    className="inline-flex items-center px-2.5 py-1 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-colors border border-emerald-500/20 font-medium"
+                    className="inline-flex items-center px-3 py-1 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl transition-colors border border-emerald-500/20 font-semibold active:scale-95"
                   >
                     <Plus className="w-3.5 h-3.5 mr-1" />
                     Record Learning
@@ -303,7 +307,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               {isAddingLearning && (
                 <form
                   onSubmit={handleCreateLearning}
-                  className="p-4 bg-[#0d0e12] border border-emerald-500/30 rounded-xl space-y-3 shadow-inner"
+                  className="p-4 bg-[#0a0c10] border border-emerald-500/30 rounded-2xl space-y-3 shadow-inner"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-emerald-400 flex items-center">
@@ -324,7 +328,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                     placeholder="Title (e.g. Cloudflare D1 JSON Serialization Handling)"
                     value={learningTitle}
                     onChange={(e) => setLearningTitle(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-[#14161c] border border-white/10 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 bg-[#101218] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
                   />
                   <textarea
                     required
@@ -332,20 +336,20 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                     placeholder="Markdown note, root cause, architectural decision, code snippet..."
                     value={learningContent}
                     onChange={(e) => setLearningContent(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-[#14161c] border border-white/10 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono leading-relaxed"
+                    className="w-full p-3 bg-[#101218] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono leading-relaxed"
                   />
                   <input
                     type="text"
                     placeholder="Tags comma-separated (e.g. D1, Edge, Security)"
                     value={learningTagsStr}
                     onChange={(e) => setLearningTagsStr(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-[#14161c] border border-white/10 rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3.5 py-2 bg-[#101218] border border-white/10 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={isSavingLearning}
-                      className="flex items-center px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition-all active:scale-[0.98] disabled:opacity-50"
+                      className="flex items-center px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm"
                     >
                       {isSavingLearning && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
                       {isSavingLearning ? 'Saving...' : 'Save Learning'}
@@ -359,7 +363,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 {learnings.map((l) => (
                   <div
                     key={l.id}
-                    className="p-3.5 bg-[#0d0e12] border border-white/[0.06] rounded-xl space-y-2 shadow-sm"
+                    className="p-4 bg-[#0a0c10] border border-white/[0.06] rounded-xl space-y-2.5 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-white">{l.title}</span>
@@ -369,7 +373,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                           await deleteLearning(l.id);
                           refetchLearnings();
                         }}
-                        className="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors"
+                        className="text-slate-500 hover:text-rose-400 p-1 rounded-lg transition-colors"
                         title="Delete learning"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -377,11 +381,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                     </div>
                     <MarkdownViewer content={l.content} className="text-xs text-slate-300" />
                     {l.tags && l.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1 border-t border-white/[0.04]">
+                      <div className="flex flex-wrap gap-1 pt-2 border-t border-white/[0.04]">
                         {l.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20"
+                            className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20"
                           >
                             #{tag}
                           </span>

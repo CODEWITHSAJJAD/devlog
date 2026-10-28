@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plus,
   FolderKanban,
@@ -8,6 +9,9 @@ import {
   Sparkles,
   TrendingUp,
   Layers,
+  ArrowUpRight,
+  ShieldCheck,
+  CheckCircle2,
 } from 'lucide-react';
 import { useFetchProjects } from '../hooks/useFetchProjects';
 import { useLearnings } from '../hooks/useLearnings';
@@ -61,21 +65,21 @@ export const Dashboard: React.FC = () => {
   });
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 select-none">
-      {/* 1. Header & Primary Action */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="p-4 sm:p-6 md:p-8 max-w-[96rem] mx-auto space-y-7 select-none">
+      {/* 1. Header & Primary Action Bar */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/[0.06]">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 font-semibold">
-              Mission Control
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 font-bold">
+              Engineering Workspace
             </span>
-            <span className="text-slate-500 text-xs font-mono">• Multi-Tenant Active</span>
+            <span className="text-slate-500 text-xs font-mono">• Production Tier</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-            Engineering Projects
+            Projects Mission Control
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-xl leading-relaxed">
-            Architectural initiatives, sprint velocity, and continuous technical learnings.
+            High-performance sprint boards, architectural initiatives, and cross-project knowledge capture.
           </p>
         </div>
 
@@ -88,67 +92,109 @@ export const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      {/* 2. Executive Hardware Telemetry HUD */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Metric 1: Sprint Velocity & Completion */}
-        <div className="p-4 bg-[#0e1015] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] relative overflow-hidden">
-          <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-indigo-400" /> Sprint Completion
+      {/* 2. Asymmetric Executive Telemetry Bento */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Hero Tile: Sprint Completion Gauge */}
+        <div className="md:col-span-5 p-5 bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between relative overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
+                <TrendingUp className="w-3.5 h-3.5 text-indigo-400" /> Sprint Delivery Rate
+              </span>
+              <div className="text-3xl font-black text-white tracking-tight mt-2">
+                {completionRate}%
+              </div>
+              <p className="text-xs text-slate-400 mt-1 font-mono">
+                {completedProjects} of {totalProjects} projects finalized
+              </p>
+            </div>
+
+            {/* Circular Progress Gauge */}
+            <div className="relative w-16 h-16 flex items-center justify-center flex-shrink-0">
+              <svg className="w-16 h-16 transform -rotate-90">
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  stroke="currentColor"
+                  strokeWidth="5"
+                  className="text-white/[0.06]"
+                  fill="transparent"
+                />
+                <circle
+                  cx="32"
+                  cy="32"
+                  r="26"
+                  stroke="currentColor"
+                  strokeWidth="5"
+                  strokeDasharray={163}
+                  strokeDashoffset={163 - (163 * completionRate) / 100}
+                  className="text-emerald-400 transition-all duration-700 ease-out"
+                  fill="transparent"
+                />
+              </svg>
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 absolute" />
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3.5 border-t border-white/[0.05] flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <span>{activeProjects} in development</span>
+            <span className="text-emerald-400 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5" /> High Reliability
             </span>
-            <span className="font-mono font-bold text-white">{completionRate}%</span>
-          </div>
-
-          <div className="text-2xl font-black text-white tracking-tight mb-2">
-            {completedProjects} <span className="text-slate-500 text-sm font-normal">/ {totalProjects} Projects</span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
-              style={{ width: `${completionRate}%` }}
-            />
           </div>
         </div>
 
-        {/* Metric 2: Priority Health */}
-        <div className="p-4 bg-[#0e1015] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)]">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-rose-400" /> Active Initiatives
+        {/* Telemetry Tile 2: Active Initiatives & Priority */}
+        <div className="md:col-span-4 p-5 bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between">
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
+              <Layers className="w-3.5 h-3.5 text-rose-400" /> Active Initiatives
+            </span>
+            <div className="text-3xl font-black text-white tracking-tight mt-2">
+              {activeProjects} <span className="text-slate-500 text-sm font-normal">Active</span>
+            </div>
           </div>
 
-          <div className="text-2xl font-black text-white tracking-tight mb-1">
-            {activeProjects} <span className="text-slate-500 text-sm font-normal">In Progress</span>
-          </div>
-
-          <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400 mt-2">
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-rose-400" /> {highPriorityCount} High Priority
+          <div className="mt-4 pt-3.5 border-t border-white/[0.05] flex items-center gap-3 text-[11px] font-mono text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+              {highPriorityCount} High Priority
             </span>
             <span>•</span>
             <span className="text-slate-500">{totalProjects - highPriorityCount} Standard</span>
           </div>
         </div>
 
-        {/* Metric 3: Technical Knowledge Base */}
-        <div className="p-4 bg-[#0e1015] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)]">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Knowledge Engine
+        {/* Telemetry Tile 3: Knowledge Base Link */}
+        <Link
+          to="/knowledge-base"
+          className="md:col-span-3 p-5 bg-[#090b10] hover:bg-[#0e1017] border border-white/[0.08] hover:border-emerald-500/30 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between transition-all group cursor-pointer"
+        >
+          <div className="flex items-start justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Second Brain
+            </span>
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </div>
 
-          <div className="text-2xl font-black text-white tracking-tight mb-1">
-            {learnings.length} <span className="text-slate-500 text-sm font-normal">Learnings Recorded</span>
+          <div>
+            <div className="text-3xl font-black text-white tracking-tight mt-2">
+              {learnings.length}
+            </div>
+            <div className="text-[11px] font-mono text-emerald-400/90 mt-1">
+              Cross-project learnings cataloged
+            </div>
           </div>
 
-          <div className="text-[11px] font-mono text-emerald-400/90 mt-2">
-            Cross-project architectural archive active
+          <div className="mt-4 pt-3.5 border-t border-white/[0.05] text-[10px] font-mono text-slate-500">
+            Obsidian-grade reader ready →
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* 3. Filter Bar & View Toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
         {/* Left: Search & Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Search Input */}
@@ -159,12 +205,12 @@ export const Dashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter by title, scope, PRJ-..."
-              className="pl-8 pr-3 py-1.5 bg-[#0e1015] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors w-52 md:w-64"
+              className="pl-8 pr-3 py-1.5 bg-[#0a0c10] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors w-52 md:w-64 font-mono"
             />
           </div>
 
           {/* Status Tabs */}
-          <div className="flex items-center p-0.5 bg-[#0e1015] border border-white/[0.08] rounded-xl">
+          <div className="flex items-center p-0.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl">
             {(['ALL', 'ACTIVE', 'COMPLETED'] as const).map((tab) => (
               <button
                 key={tab}
@@ -184,7 +230,7 @@ export const Dashboard: React.FC = () => {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-[#0e1015] border border-white/[0.08] rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+            className="px-2.5 py-1.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-mono"
           >
             <option value="ALL">All Priorities</option>
             <option value="PRIO_HIGH">High Priority</option>
@@ -194,7 +240,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Right: Grid / Table View Switcher */}
-        <div className="flex items-center self-end sm:self-auto p-0.5 bg-[#0e1015] border border-white/[0.08] rounded-xl">
+        <div className="flex items-center self-end sm:self-auto p-0.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-lg transition-all ${
@@ -227,7 +273,7 @@ export const Dashboard: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-48 bg-[#0e1015] border border-white/[0.06] rounded-2xl animate-pulse p-6"
+              className="h-48 bg-[#090b10] border border-white/[0.06] rounded-2xl animate-pulse p-6"
             />
           ))}
         </div>
@@ -248,13 +294,13 @@ export const Dashboard: React.FC = () => {
 
       {/* 3. Empty State */}
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#0c0d12]/50">
+        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#090b10]/50">
           <FolderKanban className="w-12 h-12 mx-auto text-slate-600 mb-3" />
-          <h3 className="text-sm font-semibold text-slate-200">No projects match criteria</h3>
-          <p className="text-xs text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+          <h3 className="text-sm font-semibold text-slate-200">No projects found</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
             {searchQuery || statusFilter !== 'ALL' || priorityFilter !== 'ALL'
-              ? 'Try relaxing your search query or status/priority filters.'
-              : 'Initialize your first engineering initiative to track Kanban tickets and attached learnings.'}
+              ? 'No projects match your current filters.'
+              : 'Create your first project to start tracking engineering sprints and tickets.'}
           </p>
           <button
             onClick={() => setIsCreateOpen(true)}
@@ -266,7 +312,7 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* 4. Success State: Grid or Table */}
+      {/* 4. Data State */}
       {!isLoading && !error && filteredProjects.length > 0 && (
         <>
           {viewMode === 'grid' ? (
@@ -275,54 +321,63 @@ export const Dashboard: React.FC = () => {
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  onView={(p) => setViewingProject(p)}
-                  onEdit={(p) => setEditingProject(p)}
-                  onDelete={(p) => setDeletingProject(p)}
+                  onView={setViewingProject}
+                  onEdit={setEditingProject}
+                  onDelete={setDeletingProject}
                 />
               ))}
             </div>
           ) : (
             <ProjectTableView
               projects={filteredProjects}
-              onView={(p) => setViewingProject(p)}
-              onEdit={(p) => setEditingProject(p)}
-              onDelete={(p) => setDeletingProject(p)}
+              onView={setViewingProject}
+              onEdit={setEditingProject}
+              onDelete={setDeletingProject}
             />
           )}
         </>
       )}
 
-      {/* Create Project Modal */}
+      {/* Modals Suite */}
       <CreateProjectModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={createProject}
       />
 
-      {/* Edit Project Modal */}
       <EditProjectModal
         isOpen={!!editingProject}
         project={editingProject}
         onClose={() => setEditingProject(null)}
-        onSubmit={updateProject}
+        onSubmit={async (id, updates) => {
+          const res = await updateProject(id, updates);
+          if (res.success) {
+            setEditingProject(null);
+          }
+          return res;
+        }}
       />
 
-      {/* Project Details Modal */}
       <ProjectDetailsModal
         isOpen={!!viewingProject}
         project={viewingProject}
         onClose={() => setViewingProject(null)}
-        onEdit={(proj) => setEditingProject(proj)}
-        onDelete={(proj) => setDeletingProject(proj)}
+        onEdit={() => {
+          setEditingProject(viewingProject);
+          setViewingProject(null);
+        }}
+        onDelete={() => {
+          setDeletingProject(viewingProject);
+          setViewingProject(null);
+        }}
       />
 
-      {/* Delete Project Modal */}
       <DeleteConfirmModal
         isOpen={!!deletingProject}
         title="Delete Project"
         itemName={deletingProject?.title || ''}
         itemType="Project"
-        description="will be soft-deleted. Historical audit records remain intact."
+        description="will be soft-deleted. Attached tasks will remain in the database."
         onClose={() => setDeletingProject(null)}
         onConfirm={async () => {
           if (!deletingProject) return { success: false };

@@ -31,7 +31,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="w-full bg-[#0e1015] border border-white/[0.08] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden">
+    <div className="w-full bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -93,12 +93,12 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   {/* Target Deadline */}
                   <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] text-slate-400">
                     {isCompleted ? (
-                      <span className="inline-flex items-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md text-[10px]">
+                      <span className="inline-flex items-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md text-[10px] font-semibold">
                         <CheckCircle2 className="w-3 h-3 mr-1" />
                         Completed
                       </span>
                     ) : project.dueDate ? (
-                      <span className="inline-flex items-center text-slate-300">
+                      <span className="inline-flex items-center text-slate-400">
                         <Calendar className="w-3.5 h-3.5 mr-1 text-slate-500" />
                         {formatDate(project.dueDate)}
                       </span>
@@ -108,24 +108,24 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   </td>
 
                   {/* Actions */}
-                  <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div
-                      className="inline-flex items-center gap-1.5"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                  <td
+                    className="py-3.5 px-4 text-right whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => navigate(`/projects/${project.id}`)}
-                        className="px-2.5 py-1 text-[11px] text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-lg transition-colors font-medium inline-flex items-center gap-1"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                         title="Open Kanban Board"
                       >
-                        Board <ArrowRight className="w-3 h-3" />
+                        <ExternalLink className="w-3.5 h-3.5" />
                       </button>
 
                       <DropdownMenu
                         trigger={
                           <button
                             type="button"
-                            className="p-1 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                             title="More options"
                           >
                             <MoreVertical className="w-3.5 h-3.5" />
@@ -143,8 +143,8 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                             onClick: () => onEdit(project),
                           },
                           {
-                            label: 'Open Board',
-                            icon: <ExternalLink className="w-3.5 h-3.5" />,
+                            label: 'Open Kanban Board',
+                            icon: <ArrowRight className="w-3.5 h-3.5" />,
                             onClick: () => navigate(`/projects/${project.id}`),
                           },
                           'divider',

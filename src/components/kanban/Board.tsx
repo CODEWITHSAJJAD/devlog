@@ -8,6 +8,7 @@ interface BoardProps {
   onTaskClick?: (task: Task) => void;
   onTaskDrop?: (taskId: string, targetStatusId: string) => void;
   onAddTask?: (statusId: string) => void;
+  onRecordLearning?: (task: Task) => void;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -16,6 +17,7 @@ export const Board: React.FC<BoardProps> = ({
   onTaskClick,
   onTaskDrop,
   onAddTask,
+  onRecordLearning,
 }) => {
   return (
     <div className="flex gap-4 overflow-x-auto pb-4 h-full items-start select-none">
@@ -27,6 +29,7 @@ export const Board: React.FC<BoardProps> = ({
           onTaskClick={onTaskClick}
           onTaskDrop={onTaskDrop}
           onAddTask={onAddTask}
+          onRecordLearning={onRecordLearning}
         />
       ))}
     </div>

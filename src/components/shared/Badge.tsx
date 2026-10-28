@@ -1,6 +1,16 @@
 import React from 'react';
 
-type BadgeVariant = 'feature' | 'bug' | 'rd' | 'low' | 'medium' | 'high' | 'neutral' | 'tag' | 'success';
+export type BadgeVariant =
+  | 'critical'
+  | 'feature'
+  | 'bug'
+  | 'rd'
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'neutral'
+  | 'tag'
+  | 'success';
 
 interface BadgeProps {
   label: string;
@@ -10,7 +20,11 @@ interface BadgeProps {
   onClick?: () => void;
 }
 
-const variantStyles: Record<BadgeVariant, { bg: string; dot: string }> = {
+const variantStyles: Record<BadgeVariant, { bg: string; dot: string; glow?: string }> = {
+  critical: {
+    bg: 'bg-rose-500/15 text-rose-300 border-rose-500/30 font-semibold shadow-[0_0_8px_rgba(244,63,94,0.15)]',
+    dot: 'bg-rose-400 animate-pulse',
+  },
   feature: {
     bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     dot: 'bg-emerald-400',
@@ -32,15 +46,15 @@ const variantStyles: Record<BadgeVariant, { bg: string; dot: string }> = {
     dot: 'bg-amber-400',
   },
   high: {
-    bg: 'bg-rose-500/10 text-rose-300 border-rose-500/20',
-    dot: 'bg-rose-400',
+    bg: 'bg-orange-500/10 text-orange-300 border-orange-500/20',
+    dot: 'bg-orange-400',
   },
   success: {
     bg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
     dot: 'bg-emerald-400',
   },
   neutral: {
-    bg: 'bg-white/[0.05] text-slate-300 border-white/[0.08]',
+    bg: 'bg-white/[0.04] text-slate-300 border-white/[0.08]',
     dot: 'bg-slate-400',
   },
   tag: {
@@ -51,12 +65,13 @@ const variantStyles: Record<BadgeVariant, { bg: string; dot: string }> = {
 
 export const resolveBadgeVariant = (code: string): BadgeVariant => {
   const c = code.toUpperCase();
+  if (c.includes('CRITICAL') || c.includes('URGENT')) return 'critical';
   if (c.includes('FEATURE')) return 'feature';
   if (c.includes('BUG')) return 'bug';
   if (c.includes('RD') || c.includes('R&D')) return 'rd';
   if (c.includes('COMPLETED') || c.includes('DONE')) return 'success';
   if (c.includes('HIGH')) return 'high';
-  if (c.includes('MEDIUM')) return 'medium';
+  if (c.includes('MEDIUM') || c.includes('MED')) return 'medium';
   if (c.includes('LOW')) return 'low';
   return 'neutral';
 };
