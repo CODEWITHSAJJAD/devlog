@@ -5,4 +5,5 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "devlog-db"
-database_id = "local-d1-devlog"
+database_id = "70d4771a-7bef-4d02-a5de-60f503515ffb"
+migrations_dir = "db/migrations"
