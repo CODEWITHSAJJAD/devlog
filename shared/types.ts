@@ -8,7 +8,11 @@ export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 export type SafeUser = Omit<User, 'passwordHash'>;
 
-export type Project = InferSelectModel<typeof projects>;
+export type Project = InferSelectModel<typeof projects> & {
+  totalTasks?: number;
+  doneTasks?: number;
+  progress?: number;
+};
 export type NewProject = InferInsertModel<typeof projects>;
 
 export type Task = InferSelectModel<typeof tasks>;

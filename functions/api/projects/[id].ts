@@ -1,7 +1,7 @@
 import { eq, and } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
 import { normalizeToDate } from '../../utils/date';
-import { projects } from '../../../db/schema';
+import { projects, tasks } from '../../../db/schema';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, 'id', EventContextData> = async (context) => {
@@ -30,9 +30,49 @@ export const onRequestGet: PagesFunction<Env, 'id', EventContextData> = async (c
       });
     }
 
-    return new Response(JSON.stringify({ success: true, data: project }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const pTasks = await db
+      .select({
+        id: tasks.id,
+        statusId: tasks.statusId,
+      })
+      .from(tasks)
+      .where(and(eq(tasks.projectId, projectId), eq(tasks.isActive, true)))
+      .all();
+
+    const totalTasks = pTasks.length;
+    const doneTasks = pTasks.filter((t) => t.statusId === 'TASK_STAT_DONE').length;
+    let progress = 0;
+    if (totalTasks > 0) {
+      const sum = pTasks.reduce((acc, t) => {
+        const s = t.statusId.toUpperCase();
+        if (s.includes('DONE')) return acc + 100;
+        if (s.includes('TESTING') || s.includes('REVIEW')) return 80;
+        if (s.includes('PROGRESS')) return 50;
+        if (s.includes('TODO')) return 20;
+        if (s.includes('BLOCKED')) return 20;
+        return acc;
+      }, 0);
+      progress = Math.round(sum / totalTasks);
+    } else if (project.statusId === 'PROJ_STAT_COMPLETED') {
+      progress = 100;
+    } else if (project.statusId === 'PROJ_STAT_ACTIVE') {
+      progress = 15;
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: {
+          ...project,
+          totalTasks,
+          doneTasks,
+          progress,
+        },
+      }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (err: any) {
     return new Response(JSON.stringify({ success: false, error: err.message || 'Failed to fetch project' }), {
       status: 500,

@@ -22,6 +22,7 @@ import { useFetchTasks } from '../hooks/useFetchTasks';
 import { useLookups } from '../hooks/useLookups';
 import { useLearnings } from '../hooks/useLearnings';
 import { apiFetch } from '../utils/api';
+import { calculateProjectProgress } from '../utils/progress';
 import type { Task, Lookup, Project } from '../../shared/types';
 
 export const ProjectBoard: React.FC = () => {
@@ -70,10 +71,11 @@ export const ProjectBoard: React.FC = () => {
     fetchProjectDetails();
   }, [fetchProjectDetails]);
 
-  // Telemetry Metrics
+  // Real weighted engineering progress
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter((t) => t.statusId === 'TASK_STAT_DONE').length;
-  const completionPercentage = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const testingTasks = tasks.filter((t) => t.statusId === 'TASK_STAT_TESTING').length;
+  const completionPercentage = calculateProjectProgress(tasks, project?.statusId);
   const criticalTasks = tasks.filter(
     (t) => t.priorityId === 'PRIO_CRITICAL' && t.statusId !== 'TASK_STAT_DONE'
   ).length;
@@ -146,14 +148,14 @@ export const ProjectBoard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4.75rem)] w-full px-4 sm:px-6 md:px-8 py-3 select-none overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full px-4 sm:px-6 md:px-8 py-4 select-none overflow-hidden">
       {/* 1. Project Breadcrumbs & Telemetry HUD */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-3.5 border-b border-white/[0.06] flex-shrink-0 gap-3.5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-3.5 border-b border-white/[0.08] flex-shrink-0 gap-3.5">
         {/* Left: Breadcrumbs & Project Monogram */}
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#0e1016] hover:bg-white/10 border border-white/[0.06] transition-all active:scale-95"
+            className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#131622] hover:bg-[#181c2a] border border-white/[0.08] transition-all active:scale-95"
             title="Back to Projects"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -161,7 +163,7 @@ export const ProjectBoard: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md">
+              <span className="font-mono text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-md">
                 PRJ-{projectId?.slice(0, 4).toUpperCase()}
               </span>
               <h1 className="text-base font-bold text-white tracking-tight">
@@ -187,7 +189,7 @@ export const ProjectBoard: React.FC = () => {
         {/* Right: Telemetry Health Gauge & Action Suite */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Progress Telemetry Pill */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#0e1016] border border-white/[0.06]">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#131622] border border-white/[0.08]">
             {/* Circular mini gauge */}
             <div className="relative w-5 h-5 flex items-center justify-center">
               <svg className="w-5 h-5 transform -rotate-90">
@@ -208,15 +210,15 @@ export const ProjectBoard: React.FC = () => {
                   strokeWidth="2"
                   strokeDasharray={44}
                   strokeDashoffset={44 - (44 * completionPercentage) / 100}
-                  className="text-emerald-400 transition-all duration-500"
+                  className="text-sky-400 transition-all duration-500"
                   fill="transparent"
                 />
               </svg>
             </div>
             <div className="flex items-center gap-2 text-[11px] font-mono">
               <span className="font-semibold text-slate-200">{completionPercentage}%</span>
-              <span className="text-slate-500">
-                ({doneTasks}/{totalTasks} done)
+              <span className="text-slate-400">
+                ({doneTasks}/{totalTasks} closed{testingTasks > 0 ? `, ${testingTasks} in testing` : ''})
               </span>
             </div>
             {criticalTasks > 0 && (
@@ -233,7 +235,7 @@ export const ProjectBoard: React.FC = () => {
               trigger={
                 <button
                   type="button"
-                  className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#0e1016] hover:bg-white/10 border border-white/[0.06] transition-colors active:scale-95"
+                  className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#131622] hover:bg-[#181c2a] border border-white/[0.08] transition-colors active:scale-95"
                   title="Project settings"
                 >
                   <MoreVertical className="w-4 h-4" />
@@ -264,7 +266,7 @@ export const ProjectBoard: React.FC = () => {
           {/* New Task Button */}
           <button
             onClick={() => handleOpenCreateTask('TASK_STAT_BACKLOG')}
-            className="flex items-center px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_10px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98]"
+            className="flex items-center px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_10px_rgba(14,165,233,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98]"
           >
             <Plus className="w-3.5 h-3.5 mr-1.5" />
             New Task
@@ -283,7 +285,7 @@ export const ProjectBoard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter tasks..."
-              className="pl-8 pr-3 py-1.5 bg-[#0a0c10] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44 sm:w-56 transition-colors font-mono"
+              className="pl-8 pr-3 py-1.5 bg-[#131622] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 w-44 sm:w-56 transition-colors font-mono"
             />
             {searchQuery && (
               <button
@@ -296,7 +298,7 @@ export const ProjectBoard: React.FC = () => {
           </div>
 
           {/* Type Filter Chips */}
-          <div className="flex items-center bg-[#0a0c10] border border-white/[0.06] rounded-xl p-0.5">
+          <div className="flex items-center bg-[#131622] border border-white/[0.06] rounded-xl p-0.5">
             <button
               onClick={() => setTypeFilter('ALL')}
               className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${
@@ -323,7 +325,7 @@ export const ProjectBoard: React.FC = () => {
           </div>
 
           {/* Priority Filter */}
-          <div className="flex items-center bg-[#0a0c10] border border-white/[0.06] rounded-xl p-0.5">
+          <div className="flex items-center bg-[#131622] border border-white/[0.06] rounded-xl p-0.5">
             <button
               onClick={() => setPriorityFilter('ALL')}
               className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${

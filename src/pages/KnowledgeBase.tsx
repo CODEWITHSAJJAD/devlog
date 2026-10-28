@@ -108,7 +108,7 @@ export const KnowledgeBase: React.FC = () => {
         {/* View Mode Switcher & Create Action */}
         <div className="flex items-center gap-3">
           {/* Layout Mode Toggle */}
-          <div className="flex items-center bg-[#0a0c10] border border-white/[0.08] rounded-xl p-1">
+          <div className="flex items-center bg-[#121520] border border-white/[0.08] rounded-xl p-1">
             <button
               onClick={() => setViewMode('split')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -149,7 +149,7 @@ export const KnowledgeBase: React.FC = () => {
       </div>
 
       {/* 2. Search & Tag Filter HUD */}
-      <div className="p-4 bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] space-y-3">
+      <div className="p-4 bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] space-y-3">
         <div className="relative">
           <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
           <input
@@ -222,7 +222,7 @@ export const KnowledgeBase: React.FC = () => {
       )}
 
       {!isLoading && !error && filtered.length === 0 && (
-        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#090b10]/50">
+        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#121520]/50">
           <Sparkles className="w-12 h-12 mx-auto text-slate-600 mb-3" />
           <h3 className="text-sm font-semibold text-slate-200">No technical notes found</h3>
           <p className="text-xs text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
@@ -256,8 +256,8 @@ export const KnowledgeBase: React.FC = () => {
                   onClick={() => setSelectedNoteId(item.id)}
                   className={`p-4 rounded-xl border transition-all duration-150 cursor-pointer active:scale-[0.99] ${
                     isSelected
-                      ? 'bg-[#10141e] border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.12),inset_0_1px_0_rgba(255,255,255,0.08)]'
-                      : 'bg-[#090b10] hover:bg-[#0d0f15] border-white/[0.06] hover:border-white/[0.12]'
+                      ? 'bg-[#181d2c] border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.12),inset_0_1px_0_rgba(255,255,255,0.08)]'
+                      : 'bg-[#121520] hover:bg-[#161a27] border-white/[0.06] hover:border-white/[0.12]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -298,7 +298,7 @@ export const KnowledgeBase: React.FC = () => {
           </div>
 
           {/* Right Column: Obsidian-Grade Reading Canvas */}
-          <div className="lg:col-span-7 bg-[#090b10] border border-white/[0.08] rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.06)] min-h-[28rem]">
+          <div className="lg:col-span-7 bg-[#121520] border border-white/[0.08] rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] min-h-[28rem]">
             {currentSelectedNote ? (
               <div className="space-y-5">
                 {/* Header: Title, Provenance, Actions */}
@@ -401,7 +401,7 @@ export const KnowledgeBase: React.FC = () => {
                 setActiveLearning(item);
                 setModalMode('view');
               }}
-              className="group relative p-5 bg-[#090b10] hover:bg-[#0e1017] border border-white/[0.08] hover:border-white/[0.16] rounded-2xl transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.12)] cursor-pointer flex flex-col justify-between"
+              className="group relative p-5 bg-[#121520] hover:bg-[#181d2c] border border-white/[0.08] hover:border-white/[0.16] rounded-2xl transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] cursor-pointer flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">

@@ -13,7 +13,8 @@ INSERT INTO lookups (id, category, code, label, sort_order, created_by, _updated
 ('TASK_STAT_BACKLOG',     'TASK_STATUS',    'BACKLOG',     'Backlog',     10, 'SYSTEM', 'SYSTEM', 1),
 ('TASK_STAT_TODO',        'TASK_STATUS',    'TODO',        'To Do',       20, 'SYSTEM', 'SYSTEM', 1),
 ('TASK_STAT_IN_PROGRESS', 'TASK_STATUS',    'IN_PROGRESS', 'In Progress', 30, 'SYSTEM', 'SYSTEM', 1),
-('TASK_STAT_BLOCKED',     'TASK_STATUS',    'BLOCKED',     'Blocked',     40, 'SYSTEM', 'SYSTEM', 1),
+('TASK_STAT_TESTING',     'TASK_STATUS',    'TESTING',     'Testing',     35, 'SYSTEM', 'SYSTEM', 1),
+('TASK_STAT_BLOCKED',     'TASK_STATUS',    'BLOCKED',     'Blocked',     45, 'SYSTEM', 'SYSTEM', 1),
 ('TASK_STAT_DONE',        'TASK_STATUS',    'DONE',        'Done',        50, 'SYSTEM', 'SYSTEM', 1),
 
 -- ==========================================

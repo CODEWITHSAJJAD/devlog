@@ -40,11 +40,16 @@ export const Dashboard: React.FC = () => {
   const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Metrics calculations
+  // Weighted engineering progress metrics
   const totalProjects = projects.length;
   const completedProjects = projects.filter((p) => p.statusId === 'PROJ_STAT_COMPLETED').length;
   const activeProjects = totalProjects - completedProjects;
-  const completionRate = totalProjects > 0 ? Math.round((completedProjects / totalProjects) * 100) : 0;
+
+  const totalProgressSum = projects.reduce(
+    (sum, p) => sum + (p.progress !== undefined ? p.progress : p.statusId === 'PROJ_STAT_COMPLETED' ? 100 : 0),
+    0
+  );
+  const completionRate = totalProjects > 0 ? Math.round(totalProgressSum / totalProjects) : 0;
   const highPriorityCount = projects.filter((p) => p.priorityId === 'PRIO_HIGH').length;
 
   // Filter logic
@@ -67,11 +72,11 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-[96rem] mx-auto space-y-7 select-none">
       {/* 1. Header & Primary Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/[0.06]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/[0.08]">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 font-bold">
-              Engineering Workspace
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest text-sky-400 bg-sky-500/10 border border-sky-500/20 font-bold">
+              Mission Control
             </span>
             <span className="text-slate-500 text-xs font-mono">• Production Tier</span>
           </div>
@@ -85,7 +90,7 @@ export const Dashboard: React.FC = () => {
 
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_12px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98] w-fit"
+          className="flex items-center px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_12px_rgba(14,165,233,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98] w-fit"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Create New Project
@@ -95,17 +100,17 @@ export const Dashboard: React.FC = () => {
       {/* 2. Asymmetric Executive Telemetry Bento */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Hero Tile: Sprint Completion Gauge */}
-        <div className="md:col-span-5 p-5 bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between relative overflow-hidden">
+        <div className="md:col-span-5 p-5 bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
-                <TrendingUp className="w-3.5 h-3.5 text-indigo-400" /> Sprint Delivery Rate
+                <TrendingUp className="w-3.5 h-3.5 text-sky-400" /> Sprint Delivery Rate
               </span>
               <div className="text-3xl font-black text-white tracking-tight mt-2">
                 {completionRate}%
               </div>
               <p className="text-xs text-slate-400 mt-1 font-mono">
-                {completedProjects} of {totalProjects} projects finalized
+                {completedProjects} of {totalProjects} projects finalized (weighted progress)
               </p>
             </div>
 
@@ -129,15 +134,15 @@ export const Dashboard: React.FC = () => {
                   strokeWidth="5"
                   strokeDasharray={163}
                   strokeDashoffset={163 - (163 * completionRate) / 100}
-                  className="text-emerald-400 transition-all duration-700 ease-out"
+                  className="text-sky-400 transition-all duration-700 ease-out"
                   fill="transparent"
                 />
               </svg>
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 absolute" />
+              <CheckCircle2 className="w-5 h-5 text-sky-400 absolute" />
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.05] flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-slate-400">
             <span>{activeProjects} in development</span>
             <span className="text-emerald-400 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" /> High Reliability
@@ -146,7 +151,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Telemetry Tile 2: Active Initiatives & Priority */}
-        <div className="md:col-span-4 p-5 bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between">
+        <div className="md:col-span-4 p-5 bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between">
           <div>
             <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
               <Layers className="w-3.5 h-3.5 text-rose-400" /> Active Initiatives
@@ -156,7 +161,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.05] flex items-center gap-3 text-[11px] font-mono text-slate-400">
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center gap-3 text-[11px] font-mono text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
               {highPriorityCount} High Priority
@@ -169,7 +174,7 @@ export const Dashboard: React.FC = () => {
         {/* Telemetry Tile 3: Knowledge Base Link */}
         <Link
           to="/knowledge-base"
-          className="md:col-span-3 p-5 bg-[#090b10] hover:bg-[#0e1017] border border-white/[0.08] hover:border-emerald-500/30 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between transition-all group cursor-pointer"
+          className="md:col-span-3 p-5 bg-[#121520] hover:bg-[#181d2c] border border-white/[0.08] hover:border-emerald-500/30 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between transition-all group cursor-pointer"
         >
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
@@ -187,7 +192,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.05] text-[10px] font-mono text-slate-500">
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06] text-[10px] font-mono text-slate-500">
             Obsidian-grade reader ready →
           </div>
         </Link>
@@ -205,12 +210,12 @@ export const Dashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter by title, scope, PRJ-..."
-              className="pl-8 pr-3 py-1.5 bg-[#0a0c10] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors w-52 md:w-64 font-mono"
+              className="pl-8 pr-3 py-1.5 bg-[#121520] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors w-52 md:w-64 font-mono"
             />
           </div>
 
           {/* Status Tabs */}
-          <div className="flex items-center p-0.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl">
+          <div className="flex items-center p-0.5 bg-[#121520] border border-white/[0.08] rounded-xl">
             {(['ALL', 'ACTIVE', 'COMPLETED'] as const).map((tab) => (
               <button
                 key={tab}
@@ -230,7 +235,7 @@ export const Dashboard: React.FC = () => {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-mono"
+            className="px-2.5 py-1.5 bg-[#121520] border border-white/[0.08] rounded-xl text-xs text-slate-300 focus:outline-none focus:border-sky-500 font-mono"
           >
             <option value="ALL">All Priorities</option>
             <option value="PRIO_HIGH">High Priority</option>
@@ -240,7 +245,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Right: Grid / Table View Switcher */}
-        <div className="flex items-center self-end sm:self-auto p-0.5 bg-[#0a0c10] border border-white/[0.08] rounded-xl">
+        <div className="flex items-center self-end sm:self-auto p-0.5 bg-[#121520] border border-white/[0.08] rounded-xl">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-lg transition-all ${
@@ -273,7 +278,7 @@ export const Dashboard: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-48 bg-[#090b10] border border-white/[0.06] rounded-2xl animate-pulse p-6"
+              className="h-48 bg-[#121520] border border-white/[0.06] rounded-2xl animate-pulse p-6"
             />
           ))}
         </div>
@@ -294,7 +299,7 @@ export const Dashboard: React.FC = () => {
 
       {/* 3. Empty State */}
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#090b10]/50">
+        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#121520]/50">
           <FolderKanban className="w-12 h-12 mx-auto text-slate-600 mb-3" />
           <h3 className="text-sm font-semibold text-slate-200">No projects found</h3>
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
@@ -304,7 +309,7 @@ export const Dashboard: React.FC = () => {
           </p>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="mt-5 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-sm transition-all active:scale-[0.98]"
+            className="mt-5 inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-sm transition-all active:scale-[0.98]"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Create Project

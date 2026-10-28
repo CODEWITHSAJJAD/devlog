@@ -47,7 +47,7 @@ const ProtectedLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#060709] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(99,102,241,0.08),transparent)] flex flex-col">
+    <div className="min-h-screen bg-[#0c0e14] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(14,165,233,0.06),transparent)] flex flex-col">
       <Navbar
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onNewProject={() => setIsNewProjectOpen(true)}

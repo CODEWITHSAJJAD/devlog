@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Task } from '../../../shared/types';
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { formatDate, parseToDate } from '../../utils/api';
+import { getTaskProgress } from '../../utils/progress';
 import {
   Calendar,
   CheckCircle2,
@@ -29,6 +30,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const shortId = `TSK-${task.id.slice(0, 4).toUpperCase()}`;
   const isDone = task.statusId === 'TASK_STAT_DONE';
+  const progress = getTaskProgress(task.statusId);
 
   // Priority icon renderer
   const renderPriorityIcon = () => {
@@ -79,6 +81,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   const dueStatus = getDueStatus();
 
+  // Progress Bar color fill
+  const getProgressFill = () => {
+    if (progress >= 100) return 'bg-emerald-400';
+    if (progress >= 75) return 'bg-amber-400';
+    if (progress >= 45) return 'bg-sky-400';
+    if (progress >= 20) return 'bg-indigo-400';
+    return 'bg-slate-600';
+  };
+
   return (
     <div
       draggable
@@ -89,14 +100,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       }}
       onDragEnd={() => setIsDragging(false)}
       onClick={onClick}
-      className={`group relative p-3.5 rounded-xl bg-[#0c0e14] hover:bg-[#11131b] border border-white/[0.06] hover:border-white/[0.14] cursor-grab active:cursor-grabbing transition-all duration-150 active:scale-[0.98] shadow-[0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)] hover:shadow-[0_12px_28px_-6px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)] ${
-        isDragging ? 'opacity-40 rotate-1 scale-105 border-indigo-500' : ''
+      className={`group relative p-3.5 rounded-xl bg-[#141824] hover:bg-[#191e2e] border border-white/[0.07] hover:border-white/[0.16] cursor-grab active:cursor-grabbing transition-all duration-150 active:scale-[0.98] shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_12px_28px_-6px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] ${
+        isDragging ? 'opacity-40 rotate-1 scale-105 border-sky-500' : ''
       } ${isDone ? 'opacity-85' : ''}`}
     >
       {/* Top Header: ID + Priority Icon + Type Badge */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-slate-500 font-semibold group-hover:text-indigo-400 transition-colors">
+          <span className="font-mono text-[10px] text-slate-500 font-semibold group-hover:text-sky-400 transition-colors">
             {shortId}
           </span>
           <Badge
@@ -120,13 +131,27 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
       {/* Description Snippet */}
       {task.description && (
-        <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed mb-3">
+        <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed mb-2.5">
           {task.description}
         </p>
       )}
 
+      {/* Task Linear Progress Bar */}
+      <div className="mb-2.5">
+        <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1">
+          <span className="text-slate-500">Progress</span>
+          <span className="font-semibold text-slate-300">{progress}%</span>
+        </div>
+        <div className="w-full h-1 bg-white/[0.08] rounded-full overflow-hidden">
+          <div
+            className={`h-full ${getProgressFill()} transition-all duration-300`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
       {/* Footer Metadata */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.05] text-[10px] font-mono">
+      <div className="flex items-center justify-between pt-2 border-t border-white/[0.05] text-[10px] font-mono">
         <div className="flex items-center gap-1.5">
           {isDone ? (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">

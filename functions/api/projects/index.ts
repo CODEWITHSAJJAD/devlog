@@ -1,7 +1,7 @@
 import { eq, and, desc } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
 import { normalizeToDate } from '../../utils/date';
-import { projects } from '../../../db/schema';
+import { projects, tasks } from '../../../db/schema';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, any, EventContextData> = async (context) => {
@@ -23,7 +23,49 @@ export const onRequestGet: PagesFunction<Env, any, EventContextData> = async (co
       .orderBy(desc(projects.createdAt))
       .all();
 
-    return new Response(JSON.stringify({ success: true, data: userProjects }), {
+    // Fetch active tasks for user to calculate realistic progress metrics per project
+    const userTasks = await db
+      .select({
+        id: tasks.id,
+        projectId: tasks.projectId,
+        statusId: tasks.statusId,
+      })
+      .from(tasks)
+      .where(and(eq(tasks.userId, data.userId), eq(tasks.isActive, true)))
+      .all();
+
+    const projectsWithMetrics = userProjects.map((p) => {
+      const pTasks = userTasks.filter((t) => t.projectId === p.id);
+      const totalTasks = pTasks.length;
+      const doneTasks = pTasks.filter((t) => t.statusId === 'TASK_STAT_DONE').length;
+
+      let progress = 0;
+      if (totalTasks > 0) {
+        const sum = pTasks.reduce((acc, t) => {
+          const s = t.statusId.toUpperCase();
+          if (s.includes('DONE')) return acc + 100;
+          if (s.includes('TESTING') || s.includes('REVIEW')) return 80;
+          if (s.includes('PROGRESS')) return 50;
+          if (s.includes('TODO')) return 20;
+          if (s.includes('BLOCKED')) return 20;
+          return acc;
+        }, 0);
+        progress = Math.round(sum / totalTasks);
+      } else if (p.statusId === 'PROJ_STAT_COMPLETED') {
+        progress = 100;
+      } else if (p.statusId === 'PROJ_STAT_ACTIVE') {
+        progress = 15;
+      }
+
+      return {
+        ...p,
+        totalTasks,
+        doneTasks,
+        progress,
+      };
+    });
+
+    return new Response(JSON.stringify({ success: true, data: projectsWithMetrics }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err: any) {
@@ -77,10 +119,21 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
 
     await db.insert(projects).values(newProject);
 
-    return new Response(JSON.stringify({ success: true, data: newProject }), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: {
+          ...newProject,
+          totalTasks: 0,
+          doneTasks: 0,
+          progress: newProject.statusId === 'PROJ_STAT_COMPLETED' ? 100 : 0,
+        },
+      }),
+      {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (err: any) {
     return new Response(JSON.stringify({ success: false, error: err.message || 'Failed to create project' }), {
       status: 500,

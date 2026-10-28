@@ -40,7 +40,7 @@ export const Column: React.FC<ColumnProps> = ({
     }
   };
 
-  // Get status accent colors
+  // Get status accent colors for all 6 column types
   const getStatusTheme = () => {
     const s = status.id.toUpperCase();
     if (s.includes('DONE') || s.includes('COMPLETED')) {
@@ -49,16 +49,28 @@ export const Column: React.FC<ColumnProps> = ({
         badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
       };
     }
-    if (s.includes('PROGRESS')) {
-      return {
-        pip: 'bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.5)]',
-        badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-      };
-    }
-    if (s.includes('REVIEW')) {
+    if (s.includes('TESTING') || s.includes('QA') || s.includes('REVIEW')) {
       return {
         pip: 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]',
         badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      };
+    }
+    if (s.includes('IN_PROGRESS') || s.includes('PROGRESS')) {
+      return {
+        pip: 'bg-sky-400 shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+        badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+      };
+    }
+    if (s.includes('BLOCKED')) {
+      return {
+        pip: 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
+        badge: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+      };
+    }
+    if (s.includes('TODO') || s.includes('TO_DO')) {
+      return {
+        pip: 'bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.4)]',
+        badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
       };
     }
     return {
@@ -76,12 +88,12 @@ export const Column: React.FC<ColumnProps> = ({
       onDrop={handleDrop}
       className={`flex flex-col w-80 min-w-[20rem] rounded-2xl border transition-all duration-200 flex-shrink-0 max-h-full ${
         isDragOver
-          ? 'border-indigo-500/60 bg-indigo-950/20 shadow-[0_0_30px_rgba(99,102,241,0.18)] scale-[1.01]'
-          : 'bg-[#090b10]/90 backdrop-blur-xl border-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.5)]'
+          ? 'border-sky-500/60 bg-sky-950/20 shadow-[0_0_30px_rgba(14,165,233,0.18)] scale-[1.01]'
+          : 'bg-[#121520]/90 backdrop-blur-xl border-white/[0.07] shadow-[0_8px_24px_rgba(0,0,0,0.35)]'
       }`}
     >
-      {/* Machined Column Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] bg-white/[0.01]">
+      {/* Column Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.01]">
         <div className="flex items-center gap-2.5">
           <span className={`w-2 h-2 rounded-full ${theme.pip}`} />
           <h3 className="font-semibold text-xs tracking-tight text-slate-200">
@@ -118,7 +130,7 @@ export const Column: React.FC<ColumnProps> = ({
             <span>No tasks in this lane</span>
             <button
               onClick={() => onAddTask?.(status.id)}
-              className="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold"
+              className="text-[11px] text-sky-400 hover:text-sky-300 font-semibold"
             >
               + Create task
             </button>

@@ -31,13 +31,14 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="w-full bg-[#090b10] border border-white/[0.08] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden">
+    <div className="w-full bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/[0.06] bg-black/40 text-[10px] font-mono uppercase tracking-wider text-slate-400">
+            <tr className="border-b border-white/[0.06] bg-black/30 text-[10px] font-mono uppercase tracking-wider text-slate-400">
               <th className="py-3 px-4 font-semibold">Key</th>
               <th className="py-3 px-4 font-semibold">Project Title & Scope</th>
+              <th className="py-3 px-4 font-semibold">Progress</th>
               <th className="py-3 px-4 font-semibold">Status</th>
               <th className="py-3 px-4 font-semibold">Priority</th>
               <th className="py-3 px-4 font-semibold">Target Deadline</th>
@@ -47,6 +48,9 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
           <tbody className="divide-y divide-white/[0.04] text-xs">
             {projects.map((project) => {
               const isCompleted = project.statusId === 'PROJ_STAT_COMPLETED';
+              const progress = project.progress !== undefined ? project.progress : isCompleted ? 100 : 0;
+              const totalTasks = project.totalTasks ?? 0;
+              const doneTasks = project.doneTasks ?? 0;
 
               return (
                 <tr
@@ -56,19 +60,39 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                 >
                   {/* Key */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <span className="font-mono text-[10px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md">
+                    <span className="font-mono text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-md">
                       PRJ-{project.id.slice(0, 4).toUpperCase()}
                     </span>
                   </td>
 
                   {/* Title & Scope */}
                   <td className="py-3.5 px-4 min-w-[240px]">
-                    <div className="font-semibold text-white tracking-tight group-hover:text-indigo-300 transition-colors">
+                    <div className="font-semibold text-white tracking-tight group-hover:text-sky-300 transition-colors">
                       {project.title}
                     </div>
                     {project.description && (
                       <div className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
                         {project.description}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* Progress Column */}
+                  <td className="py-3.5 px-4 whitespace-nowrap min-w-[120px]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${progress >= 100 ? 'bg-emerald-400' : progress >= 50 ? 'bg-sky-400' : 'bg-indigo-400'} transition-all`}
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-[11px] font-semibold text-slate-300">
+                        {progress}%
+                      </span>
+                    </div>
+                    {totalTasks > 0 && (
+                      <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                        {doneTasks}/{totalTasks} tasks
                       </div>
                     )}
                   </td>
