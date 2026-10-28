@@ -1,4 +1,4 @@
-import { jwtVerify } from 'jose';
+import { verifyToken } from './utils/auth';
 import type { Env, EventContextData } from './env';
 
 export const onRequest: PagesFunction<Env, any, EventContextData> = async (context) => {
@@ -16,12 +16,12 @@ export const onRequest: PagesFunction<Env, any, EventContextData> = async (conte
     });
   }
 
-  // Public endpoints
+  // Public endpoints bypass
   if (url.pathname.startsWith('/api/auth/login') || url.pathname.startsWith('/api/auth/register')) {
     return next();
   }
 
-  // For other API routes, verify JWT from cookie or Authorization header
+  // Protected API routes
   if (url.pathname.startsWith('/api/')) {
     const cookieHeader = request.headers.get('Cookie') || '';
     const tokenMatch = cookieHeader.match(/(?:^|;\s*)auth_token=([^;]+)/);
@@ -29,22 +29,21 @@ export const onRequest: PagesFunction<Env, any, EventContextData> = async (conte
     const token = tokenMatch ? tokenMatch[1] : authHeader?.replace('Bearer ', '');
 
     if (!token) {
-      return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+      return new Response(JSON.stringify({ success: false, error: 'Authentication required' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    try {
-      const secret = new TextEncoder().encode(env.JWT_SECRET || 'dev-secret-key-replace-in-prod');
-      const { payload } = await jwtVerify(token, secret);
-      data.userId = payload.sub as string;
-    } catch {
+    const payload = await verifyToken(token, env.JWT_SECRET);
+    if (!payload || !payload.sub) {
       return new Response(JSON.stringify({ success: false, error: 'Invalid or expired token' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    data.userId = payload.sub as string;
   }
 
   return next();
