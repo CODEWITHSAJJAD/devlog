@@ -17,7 +17,11 @@ export const onRequest: PagesFunction<Env, any, EventContextData> = async (conte
   }
 
   // Public endpoints bypass
-  if (url.pathname.startsWith('/api/auth/login') || url.pathname.startsWith('/api/auth/register')) {
+  if (
+    url.pathname.startsWith('/api/auth/login') ||
+    url.pathname.startsWith('/api/auth/register') ||
+    url.pathname.startsWith('/api/lookups')
+  ) {
     return next();
   }
 

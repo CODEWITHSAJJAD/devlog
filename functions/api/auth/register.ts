@@ -60,7 +60,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ success: false, error: err.message || 'Internal server error' }), {
+    const detail = err.cause?.message || err.message || 'Internal server error';
+    return new Response(JSON.stringify({ success: false, error: detail }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

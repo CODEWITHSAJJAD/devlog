@@ -7,8 +7,16 @@ export const apiFetch = async <T>(url: string, init?: RequestInit): Promise<ApiR
       headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
       credentials: 'include',
     });
-    const data = (await res.json()) as ApiResponse<T>;
-    return data;
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = (await res.json()) as ApiResponse<T>;
+      return data;
+    }
+    const text = await res.text();
+    return {
+      success: false,
+      error: res.status ? `HTTP ${res.status}: ${text.slice(0, 120)}` : 'Network request failed',
+    };
   } catch (err: any) {
     return { success: false, error: err.message || 'Network request failed' };
   }

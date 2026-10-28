@@ -2,6 +2,7 @@
   "name": "devlog",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://127.0.0.1:8788",
   "dependencies": {
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",
@@ -31,7 +32,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply devlog-db --local",
     "db:seed": "wrangler d1 execute devlog-db --local --file=./db/seed.sql",
-    "pages:dev": "wrangler pages dev --compatibility-date=2024-01-01 --d1=DB=devlog-db"
+    "pages:dev": "react-scripts build && wrangler pages dev build --port=8788",
+    "pages:serve": "wrangler pages dev build --port=8788"
   },
   "eslintConfig": {
     "extends": [
