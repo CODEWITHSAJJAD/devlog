@@ -40,9 +40,41 @@ export const useLearnings = (taskId?: string) => {
     return { success: false, error: res.error || 'Failed to record learning' };
   };
 
+  const updateLearning = async (
+    id: string,
+    updates: { title?: string; content?: string; tags?: string[] }
+  ) => {
+    const res = await apiFetch(`/api/learnings/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    if (res.success) {
+      setLearnings((prev) => prev.map((l) => (l.id === id ? { ...l, ...updates } : l)));
+      return { success: true };
+    }
+    return { success: false, error: res.error || 'Failed to update learning' };
+  };
+
+  const deleteLearning = async (id: string) => {
+    const res = await apiFetch(`/api/learnings/${id}`, { method: 'DELETE' });
+    if (res.success) {
+      setLearnings((prev) => prev.filter((l) => l.id !== id));
+      return { success: true };
+    }
+    return { success: false, error: res.error || 'Failed to delete learning' };
+  };
+
   useEffect(() => {
     fetchLearnings();
   }, [fetchLearnings]);
 
-  return { learnings, isLoading, error, refetch: fetchLearnings, createLearning };
+  return {
+    learnings,
+    isLoading,
+    error,
+    refetch: fetchLearnings,
+    createLearning,
+    updateLearning,
+    deleteLearning,
+  };
 };

@@ -14,7 +14,7 @@ const ProtectedLayout: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500">
+      <div className="min-h-screen flex items-center justify-center bg-[#08090b] text-slate-500 font-mono text-xs">
         Authenticating session...
       </div>
     );
@@ -25,11 +25,11 @@ const ProtectedLayout: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen bg-[#08090b]">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Topbar />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-[#08090b]">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/projects/:id" element={<ProjectBoard />} />
