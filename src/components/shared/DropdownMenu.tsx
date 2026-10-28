@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 export interface DropdownMenuItem {
   label: string;
   icon?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   danger?: boolean;
   disabled?: boolean;
 }
@@ -88,8 +88,10 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  item.onClick();
-                  setIsOpen(false);
+                  if (!item.disabled) {
+                    item.onClick?.();
+                    setIsOpen(false);
+                  }
                 }}
                 className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-xs transition-colors ${
                   item.disabled

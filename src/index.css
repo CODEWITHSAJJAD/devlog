@@ -23,7 +23,9 @@
 
 body {
   margin: 0;
-  background-color: #08090b;
+  background-color: #060709;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
   color: #f8fafc;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Geist", -apple-system, system-ui, sans-serif;
   letter-spacing: -0.01em;

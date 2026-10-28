@@ -120,7 +120,7 @@ export const ProjectBoard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-[#08090b] p-6 select-none overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-5rem)] max-w-7xl mx-auto w-full p-4 md:p-6 select-none overflow-hidden">
       {/* Board Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.06] flex-shrink-0 gap-3">
         <div className="flex items-center gap-3.5">
