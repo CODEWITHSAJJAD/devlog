@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { useLookups } from '../../hooks/useLookups';
+import { toDateInputValue } from '../../utils/api';
 import type { Project } from '../../../shared/types';
 import { Loader2 } from 'lucide-react';
 
@@ -34,19 +35,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
       setDescription(project.description || '');
       setStatusId(project.statusId);
       setPriorityId(project.priorityId);
-      if (project.dueDate) {
-        const rawDate = project.dueDate as unknown;
-        const d =
-          rawDate instanceof Date
-            ? rawDate
-            : new Date(Number(rawDate) * (Number(rawDate) > 1e11 ? 1 : 1000));
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        setDueDateStr(`${yyyy}-${mm}-${dd}`);
-      } else {
-        setDueDateStr('');
-      }
+      setDueDateStr(toDateInputValue(project.dueDate));
       setError(null);
     }
   }, [project]);

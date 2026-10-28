@@ -1,5 +1,6 @@
 import { eq, and } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
+import { normalizeToDate } from '../../utils/date';
 import { tasks } from '../../../db/schema';
 import type { Env, EventContextData } from '../../env';
 
@@ -87,7 +88,8 @@ export const onRequestPut: PagesFunction<Env, 'id', EventContextData> = async (c
     if (body.typeId !== undefined) updates.typeId = body.typeId;
     if (body.priorityId !== undefined) updates.priorityId = body.priorityId;
     if (body.position !== undefined) updates.position = body.position;
-    if (body.dueDate !== undefined) updates.dueDate = body.dueDate ? new Date(body.dueDate * 1000) : null;
+    if (body.dueDate !== undefined) updates.dueDate = normalizeToDate(body.dueDate);
+    if (body.completedAt !== undefined) updates.completedAt = normalizeToDate(body.completedAt);
 
     if (body.statusId !== undefined) {
       updates.statusId = body.statusId;

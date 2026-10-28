@@ -1,5 +1,6 @@
 import { eq, and, asc, sql } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
+import { normalizeToDate } from '../../utils/date';
 import { tasks, projects } from '../../../db/schema';
 import type { Env, EventContextData } from '../../env';
 
@@ -132,7 +133,7 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
       statusId,
       priorityId,
       position,
-      dueDate: body.dueDate ? new Date(body.dueDate * 1000) : null,
+      dueDate: normalizeToDate(body.dueDate),
       completedAt: statusId === 'TASK_STAT_DONE' ? new Date() : null,
       createdBy: data.userId,
       updatedBy: data.userId,

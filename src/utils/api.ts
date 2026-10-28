@@ -22,8 +22,42 @@ export const apiFetch = async <T>(url: string, init?: RequestInit): Promise<ApiR
   }
 };
 
-export const formatDate = (timestamp?: number | Date | null): string => {
-  if (!timestamp) return 'N/A';
-  if (timestamp instanceof Date) return timestamp.toLocaleDateString();
-  return new Date(timestamp * 1000).toLocaleDateString();
+export const parseToDate = (val?: string | number | Date | null): Date | null => {
+  if (val === undefined || val === null || val === '') return null;
+  if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+  if (typeof val === 'number') {
+    const ms = val < 1e11 ? val * 1000 : val;
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof val === 'string') {
+    if (/^\d+$/.test(val)) {
+      const num = Number(val);
+      const ms = num < 1e11 ? num * 1000 : num;
+      const d = new Date(ms);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return null;
+};
+
+export const formatDate = (timestamp?: string | number | Date | null): string => {
+  const d = parseToDate(timestamp);
+  if (!d) return 'N/A';
+  return d.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+export const toDateInputValue = (timestamp?: string | number | Date | null): string => {
+  const d = parseToDate(timestamp);
+  if (!d) return '';
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 };

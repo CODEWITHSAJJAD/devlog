@@ -4,6 +4,7 @@ import { Modal } from '../shared/Modal';
 import { MarkdownViewer } from '../shared/MarkdownViewer';
 import { DeleteConfirmModal } from '../shared/DeleteConfirmModal';
 import { useLearnings } from '../../hooks/useLearnings';
+import { toDateInputValue } from '../../utils/api';
 import { Sparkles, Trash2, BookOpen, Plus, Loader2 } from 'lucide-react';
 
 interface TaskModalProps {
@@ -71,19 +72,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setTypeId(task.typeId);
       setStatusId(task.statusId);
       setPriorityId(task.priorityId);
-      if (task.dueDate) {
-        const rawDate = task.dueDate as unknown;
-        const d =
-          rawDate instanceof Date
-            ? rawDate
-            : new Date(Number(rawDate) * (Number(rawDate) > 1e11 ? 1 : 1000));
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        setDueDateStr(`${yyyy}-${mm}-${dd}`);
-      } else {
-        setDueDateStr('');
-      }
+      setDueDateStr(toDateInputValue(task.dueDate));
       refetchLearnings();
     } else {
       setTitle('');
