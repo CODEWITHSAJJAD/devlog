@@ -10,17 +10,17 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, classNa
   const lines = content.split('\n');
 
   return (
-    <div className={`space-y-2 text-sm text-slate-300 leading-relaxed ${className}`}>
+    <div className={`space-y-2 text-sm text-[#3A3A3C] leading-relaxed ${className}`}>
       {lines.map((line, idx) => {
         // Headers
         if (line.startsWith('### ')) {
-          return <h4 key={idx} className="text-sm font-semibold text-white mt-3 mb-1">{line.slice(4)}</h4>;
+          return <h4 key={idx} className="text-sm font-semibold text-[#1D1D1F] mt-3 mb-1">{line.slice(4)}</h4>;
         }
         if (line.startsWith('## ')) {
-          return <h3 key={idx} className="text-base font-semibold text-white mt-4 mb-2">{line.slice(3)}</h3>;
+          return <h3 key={idx} className="text-base font-semibold text-[#1D1D1F] mt-4 mb-2">{line.slice(3)}</h3>;
         }
         if (line.startsWith('# ')) {
-          return <h2 key={idx} className="text-lg font-bold text-white mt-4 mb-2">{line.slice(2)}</h2>;
+          return <h2 key={idx} className="text-lg font-bold text-[#1D1D1F] mt-4 mb-2">{line.slice(2)}</h2>;
         }
 
         // Code block marker
@@ -31,7 +31,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, classNa
         // Bullet point
         if (line.startsWith('- ') || line.startsWith('* ')) {
           return (
-            <li key={idx} className="ml-4 list-disc text-slate-300">
+            <li key={idx} className="ml-4 list-disc text-[#3A3A3C]">
               {line.slice(2)}
             </li>
           );
@@ -40,7 +40,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, classNa
         // Blockquote
         if (line.startsWith('> ')) {
           return (
-            <blockquote key={idx} className="border-l-2 border-indigo-500/50 pl-3 italic text-slate-400 my-1">
+            <blockquote key={idx} className="border-l-2 border-[#0071E3] pl-3 italic text-[#6E6E73] my-1">
               {line.slice(2)}
             </blockquote>
           );

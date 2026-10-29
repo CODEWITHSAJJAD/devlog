@@ -15,11 +15,11 @@ export const getTaskProgress = (statusId: string): number => {
 };
 
 export const getTaskProgressColor = (progress: number): string => {
-  if (progress >= 100) return 'text-emerald-400 bg-emerald-500';
-  if (progress >= 75) return 'text-amber-400 bg-amber-500';
-  if (progress >= 45) return 'text-sky-400 bg-sky-500';
-  if (progress >= 20) return 'text-indigo-400 bg-indigo-500';
-  return 'text-slate-500 bg-slate-600';
+  if (progress >= 100) return 'text-[#34C759] bg-[#34C759]';
+  if (progress >= 75) return 'text-[#0071E3] bg-[#0071E3]';
+  if (progress >= 45) return 'text-[#5856D6] bg-[#5856D6]';
+  if (progress >= 20) return 'text-[#FF9500] bg-[#FF9500]';
+  return 'text-[#86868B] bg-black/10';
 };
 
 export const calculateProjectProgress = (

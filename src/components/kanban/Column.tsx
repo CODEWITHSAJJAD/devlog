@@ -40,74 +40,42 @@ export const Column: React.FC<ColumnProps> = ({
     }
   };
 
-  // Get status accent colors for all 6 column types
-  const getStatusTheme = () => {
+  // Apple Status accent dot for all 6 column types
+  const getStatusColor = () => {
     const s = status.id.toUpperCase();
-    if (s.includes('DONE') || s.includes('COMPLETED')) {
-      return {
-        pip: 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-      };
-    }
-    if (s.includes('TESTING') || s.includes('QA') || s.includes('REVIEW')) {
-      return {
-        pip: 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]',
-        badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      };
-    }
-    if (s.includes('IN_PROGRESS') || s.includes('PROGRESS')) {
-      return {
-        pip: 'bg-sky-400 shadow-[0_0_8px_rgba(14,165,233,0.5)]',
-        badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-      };
-    }
-    if (s.includes('BLOCKED')) {
-      return {
-        pip: 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-        badge: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      };
-    }
-    if (s.includes('TODO') || s.includes('TO_DO')) {
-      return {
-        pip: 'bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.4)]',
-        badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-      };
-    }
-    return {
-      pip: 'bg-slate-400',
-      badge: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-    };
+    if (s.includes('DONE') || s.includes('COMPLETED')) return 'bg-[#34C759]';
+    if (s.includes('TESTING') || s.includes('QA') || s.includes('REVIEW')) return 'bg-[#0071E3]';
+    if (s.includes('IN_PROGRESS') || s.includes('PROGRESS')) return 'bg-[#FF9500]';
+    if (s.includes('BLOCKED')) return 'bg-[#FF3B30]';
+    if (s.includes('TODO') || s.includes('TO_DO')) return 'bg-[#5856D6]';
+    return 'bg-[#86868B]';
   };
-
-  const theme = getStatusTheme();
 
   return (
     <div
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex flex-col w-80 min-w-[20rem] rounded-2xl border transition-all duration-200 flex-shrink-0 max-h-full ${
+      className={`flex flex-col w-76 min-w-[19rem] rounded-2xl border transition-all flex-shrink-0 max-h-full ${
         isDragOver
-          ? 'border-sky-500/60 bg-sky-950/20 shadow-[0_0_30px_rgba(14,165,233,0.18)] scale-[1.01]'
-          : 'bg-[#121520]/90 backdrop-blur-xl border-white/[0.07] shadow-[0_8px_24px_rgba(0,0,0,0.35)]'
+          ? 'border-[#0071E3] bg-[#E8F2FE]/60 ring-2 ring-[#0071E3]/20 shadow-md'
+          : 'bg-[#ECECEF]/70 border-black/[0.05]'
       }`}
     >
-      {/* Column Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.01]">
-        <div className="flex items-center gap-2.5">
-          <span className={`w-2 h-2 rounded-full ${theme.pip}`} />
-          <h3 className="font-semibold text-xs tracking-tight text-slate-200">
+      {/* Apple Workstation Column Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04]">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
+          <h3 className="font-semibold text-xs text-[#1D1D1F]">
             {status.label}
           </h3>
-          <span
-            className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${theme.badge}`}
-          >
+          <span className="text-[10px] font-mono text-[#6E6E73] bg-white/80 border border-black/[0.06] px-2 py-0.5 rounded-full font-medium shadow-2xs">
             {tasks.length}
           </span>
         </div>
         <button
           onClick={() => onAddTask?.(status.id)}
-          className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08] transition-colors active:scale-95"
+          className="text-[#86868B] hover:text-[#1D1D1F] p-1 rounded-lg hover:bg-white/80 transition-colors"
           title={`Add task to ${status.label}`}
         >
           <Plus className="w-4 h-4" />
@@ -115,7 +83,7 @@ export const Column: React.FC<ColumnProps> = ({
       </div>
 
       {/* Task List / Drop Zone */}
-      <div className="flex-1 p-3 space-y-3 overflow-y-auto min-h-[220px]">
+      <div className="flex-1 p-2.5 space-y-2.5 overflow-y-auto min-h-[220px]">
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
@@ -126,13 +94,13 @@ export const Column: React.FC<ColumnProps> = ({
         ))}
 
         {tasks.length === 0 && (
-          <div className="h-32 flex flex-col items-center justify-center border border-dashed border-white/[0.06] hover:border-white/[0.12] rounded-xl text-slate-500 text-xs font-mono gap-1.5 transition-colors">
-            <span>No tasks in this lane</span>
+          <div className="h-32 flex flex-col items-center justify-center border border-dashed border-black/[0.08] rounded-xl text-[#86868B] text-xs font-mono gap-1 transition-colors bg-white/40">
+            <span>Empty lane</span>
             <button
               onClick={() => onAddTask?.(status.id)}
-              className="text-[11px] text-sky-400 hover:text-sky-300 font-semibold"
+              className="text-[11px] text-[#0071E3] hover:underline font-medium"
             >
-              + Create task
+              + Add task
             </button>
           </div>
         )}

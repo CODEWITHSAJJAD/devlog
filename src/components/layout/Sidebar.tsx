@@ -1,29 +1,22 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, LogOut, Terminal } from 'lucide-react';
+import { LayoutDashboard, BookOpen, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { AppLogo } from '../shared/AppLogo';
 
 export const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="w-64 bg-[#0b0c10] text-slate-300 flex flex-col min-h-screen border-r border-white/[0.06] select-none flex-shrink-0">
+    <aside className="w-64 bg-white text-[#1D1D1F] flex flex-col min-h-screen border-r border-black/[0.06] select-none flex-shrink-0">
       {/* Brand Header */}
-      <div className="h-14 flex items-center px-5 gap-3 border-b border-white/[0.06]">
-        <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-[0_1px_2px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2)]">
-          <Terminal className="w-4 h-4" />
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-sm tracking-tight text-white">DevLog</span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-white/[0.05] text-slate-400 border border-white/[0.08]">
-            Pro
-          </span>
-        </div>
+      <div className="h-14 flex items-center px-5 border-b border-black/[0.06]">
+        <AppLogo size="sm" showText={true} />
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-5 space-y-1">
-        <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-widest text-slate-500 font-semibold">
+        <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-widest text-[#86868B] font-semibold">
           Platform
         </div>
 
@@ -33,12 +26,12 @@ export const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-3 py-2 rounded-xl text-xs font-medium transition-all ${
               isActive
-                ? 'bg-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] font-semibold border border-white/[0.08]'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                ? 'bg-[#F5F5F7] text-[#0071E3] font-semibold shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-black/[0.03]'
             }`
           }
         >
-          <LayoutDashboard className="w-4 h-4 mr-2.5 text-indigo-400" />
+          <LayoutDashboard className="w-4 h-4 mr-2.5 text-[#0071E3]" />
           Projects
         </NavLink>
 
@@ -47,31 +40,31 @@ export const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-3 py-2 rounded-xl text-xs font-medium transition-all ${
               isActive
-                ? 'bg-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] font-semibold border border-white/[0.08]'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                ? 'bg-[#F5F5F7] text-[#0071E3] font-semibold shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-black/[0.03]'
             }`
           }
         >
-          <BookOpen className="w-4 h-4 mr-2.5 text-emerald-400" />
+          <BookOpen className="w-4 h-4 mr-2.5 text-emerald-600" />
           Knowledge Base
         </NavLink>
       </nav>
 
       {/* User Section & Logout */}
-      <div className="p-3 border-t border-white/[0.06] space-y-2">
-        <div className="flex items-center gap-2.5 px-3 py-2 bg-[#101217] rounded-xl border border-white/[0.06]">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center font-mono font-semibold text-xs">
+      <div className="p-3 border-t border-black/[0.06] space-y-2">
+        <div className="flex items-center gap-2.5 px-3 py-2 bg-[#F5F5F7] rounded-xl border border-black/[0.04]">
+          <div className="w-7 h-7 rounded-lg bg-[#E8F2FE] border border-[#0071E3]/20 text-[#0071E3] flex items-center justify-center font-mono font-semibold text-xs">
             {(user?.name || user?.email || 'U').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-200 truncate">{user?.name || 'Developer'}</p>
-            <p className="text-[10px] font-mono text-slate-500 truncate">{user?.email}</p>
+            <p className="text-xs font-semibold text-[#1D1D1F] truncate">{user?.name || 'Developer'}</p>
+            <p className="text-[10px] font-mono text-[#86868B] truncate">{user?.email}</p>
           </div>
         </div>
 
         <button
           onClick={logout}
-          className="flex items-center w-full px-3 py-2 text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors"
+          className="flex items-center w-full px-3 py-2 text-xs font-medium text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 rounded-xl transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4 mr-2.5" />
           Sign Out

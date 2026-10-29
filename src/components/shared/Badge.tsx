@@ -10,7 +10,10 @@ export type BadgeVariant =
   | 'high'
   | 'neutral'
   | 'tag'
-  | 'success';
+  | 'success'
+  | 'testing'
+  | 'progress'
+  | 'todo';
 
 interface BadgeProps {
   label: string;
@@ -20,52 +23,67 @@ interface BadgeProps {
   onClick?: () => void;
 }
 
-const variantStyles: Record<BadgeVariant, { bg: string; dot: string; glow?: string }> = {
+const variantStyles: Record<BadgeVariant, { bg: string; dot: string }> = {
   critical: {
-    bg: 'bg-rose-500/15 text-rose-300 border-rose-500/30 font-semibold shadow-[0_0_8px_rgba(244,63,94,0.15)]',
-    dot: 'bg-rose-400 animate-pulse',
+    bg: 'bg-rose-50 text-rose-700 border-rose-200',
+    dot: 'bg-rose-500',
   },
   feature: {
-    bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    dot: 'bg-emerald-400',
+    bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    dot: 'bg-emerald-500',
   },
   bug: {
-    bg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-    dot: 'bg-rose-400',
+    bg: 'bg-rose-50 text-rose-700 border-rose-200',
+    dot: 'bg-rose-500',
   },
   rd: {
-    bg: 'bg-violet-500/10 text-violet-300 border-violet-500/20',
-    dot: 'bg-violet-400',
+    bg: 'bg-purple-50 text-purple-700 border-purple-200',
+    dot: 'bg-purple-500',
   },
   low: {
-    bg: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+    bg: 'bg-slate-100 text-slate-600 border-slate-200',
     dot: 'bg-slate-400',
   },
   medium: {
-    bg: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
-    dot: 'bg-amber-400',
+    bg: 'bg-amber-50 text-amber-700 border-amber-200',
+    dot: 'bg-amber-500',
   },
   high: {
-    bg: 'bg-orange-500/10 text-orange-300 border-orange-500/20',
-    dot: 'bg-orange-400',
+    bg: 'bg-orange-50 text-orange-700 border-orange-200',
+    dot: 'bg-orange-500',
   },
   success: {
-    bg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
-    dot: 'bg-emerald-400',
+    bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    dot: 'bg-emerald-500',
+  },
+  testing: {
+    bg: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+    dot: 'bg-cyan-500',
+  },
+  progress: {
+    bg: 'bg-blue-50 text-blue-700 border-blue-200',
+    dot: 'bg-blue-500',
+  },
+  todo: {
+    bg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    dot: 'bg-indigo-500',
   },
   neutral: {
-    bg: 'bg-white/[0.04] text-slate-300 border-white/[0.08]',
+    bg: 'bg-slate-100 text-slate-700 border-slate-200',
     dot: 'bg-slate-400',
   },
   tag: {
-    bg: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20 hover:bg-indigo-500/20 cursor-pointer',
-    dot: 'bg-indigo-400',
+    bg: 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 cursor-pointer',
+    dot: 'bg-slate-400',
   },
 };
 
 export const resolveBadgeVariant = (code: string): BadgeVariant => {
   const c = code.toUpperCase();
-  if (c.includes('CRITICAL') || c.includes('URGENT')) return 'critical';
+  if (c.includes('CRITICAL') || c.includes('URGENT') || c.includes('BLOCKED')) return 'critical';
+  if (c.includes('TESTING') || c.includes('QA') || c.includes('REVIEW')) return 'testing';
+  if (c.includes('PROGRESS')) return 'progress';
+  if (c.includes('TODO') || c.includes('TO_DO')) return 'todo';
   if (c.includes('FEATURE')) return 'feature';
   if (c.includes('BUG')) return 'bug';
   if (c.includes('RD') || c.includes('R&D')) return 'rd';
@@ -87,9 +105,9 @@ export const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       onClick={onClick}
-      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono tracking-tight border transition-colors ${style.bg} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors ${style.bg} ${className}`}
     >
-      {dot && <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${style.dot}`} />}
+      {dot && <span className={`w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0 ${style.dot}`} />}
       {label}
     </span>
   );

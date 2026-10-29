@@ -148,14 +148,14 @@ export const ProjectBoard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full px-4 sm:px-6 md:px-8 py-4 select-none overflow-hidden">
-      {/* 1. Project Breadcrumbs & Telemetry HUD */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-3.5 border-b border-white/[0.08] flex-shrink-0 gap-3.5">
-        {/* Left: Breadcrumbs & Project Monogram */}
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full px-4 sm:px-6 py-4 select-none overflow-hidden space-y-3">
+      {/* 1. Apple Project Breadcrumbs & Summary Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-black/[0.06] flex-shrink-0 gap-3">
+        {/* Left: Breadcrumbs & Project Identity */}
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#131622] hover:bg-[#181c2a] border border-white/[0.08] transition-all active:scale-95"
+            className="p-1.5 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors"
             title="Back to Projects"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -163,11 +163,11 @@ export const ProjectBoard: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-md">
+              <span className="font-mono text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-lg shadow-2xs">
                 PRJ-{projectId?.slice(0, 4).toUpperCase()}
               </span>
-              <h1 className="text-base font-bold text-white tracking-tight">
-                {project?.title || 'Project Board'}
+              <h1 className="text-base font-bold text-[#1D1D1F] tracking-tight">
+                {project?.title || 'Board'}
               </h1>
               {project && (
                 <Badge
@@ -179,52 +179,33 @@ export const ProjectBoard: React.FC = () => {
             </div>
 
             {project?.description && (
-              <p className="text-xs text-slate-400 line-clamp-1 mt-0.5 max-w-xl">
+              <p className="text-xs text-[#6E6E73] line-clamp-1 mt-0.5 max-w-xl">
                 {project.description}
               </p>
             )}
           </div>
         </div>
 
-        {/* Right: Telemetry Health Gauge & Action Suite */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Progress Telemetry Pill */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#131622] border border-white/[0.08]">
-            {/* Circular mini gauge */}
-            <div className="relative w-5 h-5 flex items-center justify-center">
-              <svg className="w-5 h-5 transform -rotate-90">
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="7"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-white/[0.08]"
-                  fill="transparent"
-                />
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="7"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeDasharray={44}
-                  strokeDashoffset={44 - (44 * completionPercentage) / 100}
-                  className="text-sky-400 transition-all duration-500"
-                  fill="transparent"
-                />
-              </svg>
+        {/* Right: Progress Meter & Action Buttons */}
+        <div className="flex items-center gap-3">
+          {/* Progress Indicator */}
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-black/[0.06] shadow-xs text-xs">
+            <div className="w-16 h-2 bg-black/[0.05] rounded-full overflow-hidden p-[1px]">
+              <div
+                className="h-full bg-[#0071E3] rounded-full transition-all duration-300"
+                style={{ width: `${completionPercentage}%` }}
+              />
             </div>
-            <div className="flex items-center gap-2 text-[11px] font-mono">
-              <span className="font-semibold text-slate-200">{completionPercentage}%</span>
-              <span className="text-slate-400">
-                ({doneTasks}/{totalTasks} closed{testingTasks > 0 ? `, ${testingTasks} in testing` : ''})
-              </span>
-            </div>
+            <span className="font-mono font-bold text-[#1D1D1F] text-[11px]">
+              {completionPercentage}%
+            </span>
+            <span className="text-[#86868B] text-[11px]">
+              ({doneTasks}/{totalTasks} closed{testingTasks > 0 ? `, ${testingTasks} in test` : ''})
+            </span>
             {criticalTasks > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded">
-                <Flame className="w-2.5 h-2.5" />
-                {criticalTasks} critical
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-md">
+                <Flame className="w-2.5 h-2.5 text-rose-500" />
+                {criticalTasks}
               </span>
             )}
           </div>
@@ -235,10 +216,10 @@ export const ProjectBoard: React.FC = () => {
               trigger={
                 <button
                   type="button"
-                  className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#131622] hover:bg-[#181c2a] border border-white/[0.08] transition-colors active:scale-95"
+                  className="p-2 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors border border-black/[0.06] shadow-xs bg-white"
                   title="Project settings"
                 >
-                  <MoreVertical className="w-4 h-4" />
+                  <MoreVertical className="w-3.5 h-3.5" />
                 </button>
               }
               items={[
@@ -266,45 +247,45 @@ export const ProjectBoard: React.FC = () => {
           {/* New Task Button */}
           <button
             onClick={() => handleOpenCreateTask('TASK_STAT_BACKLOG')}
-            className="flex items-center px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_10px_rgba(14,165,233,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95"
           >
-            <Plus className="w-3.5 h-3.5 mr-1.5" />
-            New Task
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Task</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Interactive Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2.5 flex-shrink-0 gap-2.5">
-        <div className="flex items-center gap-2 flex-wrap">
+      {/* 2. Compact Filter Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 flex-shrink-0 gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
           {/* Search filter input */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-500" />
+            <Search className="absolute left-3 top-2 w-3.5 h-3.5 text-[#86868B]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter tasks..."
-              className="pl-8 pr-3 py-1.5 bg-[#131622] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 w-44 sm:w-56 transition-colors font-mono"
+              className="pl-8 pr-3 py-1.5 bg-white border border-black/[0.08] hover:border-black/[0.14] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] w-48 sm:w-56 transition-colors shadow-2xs font-mono"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1.5 text-slate-500 hover:text-white text-xs"
+                className="absolute right-2.5 top-1.5 text-[#86868B] hover:text-[#1D1D1F] text-xs"
               >
                 ×
               </button>
             )}
           </div>
 
-          {/* Type Filter Chips */}
-          <div className="flex items-center bg-[#131622] border border-white/[0.06] rounded-xl p-0.5">
+          {/* Type Filter Segmented Control */}
+          <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
             <button
               onClick={() => setTypeFilter('ALL')}
-              className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
                 typeFilter === 'ALL'
-                  ? 'bg-white/10 text-white font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
               }`}
             >
               All Types
@@ -313,10 +294,10 @@ export const ProjectBoard: React.FC = () => {
               <button
                 key={t.id}
                 onClick={() => setTypeFilter(t.id)}
-                className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${
+                className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
                   typeFilter === t.id
-                    ? 'bg-white/10 text-white font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                    : 'text-[#6E6E73] hover:text-[#1D1D1F]'
                 }`}
               >
                 {t.label}
@@ -325,13 +306,13 @@ export const ProjectBoard: React.FC = () => {
           </div>
 
           {/* Priority Filter */}
-          <div className="flex items-center bg-[#131622] border border-white/[0.06] rounded-xl p-0.5">
+          <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
             <button
               onClick={() => setPriorityFilter('ALL')}
-              className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
                 priorityFilter === 'ALL'
-                  ? 'bg-white/10 text-white font-semibold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
               }`}
             >
               All Priorities
@@ -340,10 +321,10 @@ export const ProjectBoard: React.FC = () => {
               <button
                 key={p.id}
                 onClick={() => setPriorityFilter(p.id)}
-                className={`px-2.5 py-1 text-[11px] rounded-lg font-medium transition-colors ${
+                className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
                   priorityFilter === p.id
-                    ? 'bg-white/10 text-white font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                    : 'text-[#6E6E73] hover:text-[#1D1D1F]'
                 }`}
               >
                 {p.label}
@@ -352,26 +333,26 @@ export const ProjectBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* Task counter indicator */}
-        <div className="text-[11px] font-mono text-slate-500">
-          Showing <span className="text-white font-semibold">{filteredTasks.length}</span> of {tasks.length} tasks
+        {/* Counter */}
+        <div className="text-[11px] font-mono text-[#86868B]">
+          Showing <span className="text-[#1D1D1F] font-semibold">{filteredTasks.length}</span> of {tasks.length} tasks
         </div>
       </div>
 
-      {/* 3. Kanban Board Surface */}
-      <div className="flex-1 pt-1.5 overflow-hidden">
+      {/* 3. 6-Lane Kanban Board Surface */}
+      <div className="flex-1 pt-1 overflow-hidden">
         {isLoading && (
-          <div className="h-full flex items-center justify-center text-xs font-mono text-slate-500">
+          <div className="h-full flex items-center justify-center text-xs font-mono text-[#86868B]">
             Loading Kanban board...
           </div>
         )}
 
         {error && !isLoading && (
-          <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl flex items-center justify-between">
+          <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center justify-between">
             <span>{error}</span>
             <button
               onClick={() => refetch()}
-              className="text-white bg-rose-600 px-3 py-1 rounded text-xs font-medium hover:bg-rose-500"
+              className="text-white bg-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-500 shadow-xs"
             >
               Retry
             </button>
@@ -419,15 +400,6 @@ export const ProjectBoard: React.FC = () => {
         }}
       />
 
-      {/* Project Details Modal */}
-      <ProjectDetailsModal
-        isOpen={isDetailsOpen}
-        project={project}
-        onClose={() => setIsDetailsOpen(false)}
-        onEdit={() => setIsEditProjectOpen(true)}
-        onDelete={() => setIsDeleteProjectOpen(true)}
-      />
-
       {/* Edit Project Modal */}
       <EditProjectModal
         isOpen={isEditProjectOpen}
@@ -436,13 +408,28 @@ export const ProjectBoard: React.FC = () => {
         onSubmit={handleUpdateProject}
       />
 
+      {/* Project Details Modal */}
+      <ProjectDetailsModal
+        isOpen={isDetailsOpen}
+        project={project}
+        onClose={() => setIsDetailsOpen(false)}
+        onEdit={() => {
+          setIsDetailsOpen(false);
+          setIsEditProjectOpen(true);
+        }}
+        onDelete={() => {
+          setIsDetailsOpen(false);
+          setIsDeleteProjectOpen(true);
+        }}
+      />
+
       {/* Delete Project Modal */}
       <DeleteConfirmModal
         isOpen={isDeleteProjectOpen}
         title="Delete Project"
         itemName={project?.title || ''}
         itemType="Project"
-        description="will be soft-deleted. You will be redirected to the projects list."
+        description="will be permanently removed along with all workspace tickets."
         onClose={() => setIsDeleteProjectOpen(false)}
         onConfirm={handleDeleteProject}
       />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
+import { Footer } from './components/layout/Footer';
 import { CommandPalette } from './components/shared/CommandPalette';
 import { CreateProjectModal } from './components/shared/CreateProjectModal';
 import { LearningModal } from './components/shared/LearningModal';
@@ -22,8 +23,18 @@ const ProtectedLayout: React.FC = () => {
   const { createProject } = useFetchProjects();
   const { createLearning } = useLearnings();
 
-  // Global ⌘K / Ctrl+K listener
+  // Global ⌘K / Ctrl+K listener & Favicon synchronization
   useEffect(() => {
+    // Ensure active browser tab favicon matches the official DevLog app icon
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.type = 'image/svg+xml';
+    link.href = '/favicon.svg';
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -36,7 +47,7 @@ const ProtectedLayout: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#060709] text-slate-500 font-mono text-xs">
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7] text-[#6E6E73] font-mono text-xs">
         Authenticating session...
       </div>
     );
@@ -47,7 +58,7 @@ const ProtectedLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0e14] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(14,165,233,0.06),transparent)] flex flex-col">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col">
       <Navbar
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onNewProject={() => setIsNewProjectOpen(true)}
@@ -61,6 +72,9 @@ const ProtectedLayout: React.FC = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {/* Global Apple Light Footer */}
+      <Footer onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
 
       {/* Global Command Palette */}
       <CommandPalette

@@ -74,11 +74,11 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
         <div
           className={`absolute ${
             align === 'right' ? 'right-0' : 'left-0'
-          } mt-1.5 w-48 rounded-xl bg-[#14161c] border border-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100`}
+          } mt-1.5 w-48 rounded-xl bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04)] py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100`}
         >
           {items.map((item, index) => {
             if (item === 'divider') {
-              return <div key={`divider-${index}`} className="my-1 border-t border-white/5" />;
+              return <div key={`divider-${index}`} className="my-1 border-t border-black/[0.06]" />;
             }
 
             return (
@@ -95,10 +95,10 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 }}
                 className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-xs transition-colors ${
                   item.disabled
-                    ? 'opacity-40 cursor-not-allowed text-slate-500'
+                    ? 'opacity-40 cursor-not-allowed text-[#86868B]'
                     : item.danger
-                    ? 'text-rose-400 hover:text-rose-300 hover:bg-rose-500/10'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'text-[#FF3B30] hover:bg-[#FF3B30]/10'
+                    : 'text-[#1D1D1F] hover:bg-[#F5F5F7]'
                 }`}
               >
                 {item.icon && <span className="w-3.5 h-3.5 opacity-70 flex-shrink-0">{item.icon}</span>}

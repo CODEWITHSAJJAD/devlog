@@ -9,7 +9,6 @@ import {
   Trash2,
   ExternalLink,
   ArrowRight,
-  FolderKanban,
 } from 'lucide-react';
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { DropdownMenu } from '../shared/DropdownMenu';
@@ -35,23 +34,22 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   const totalTasks = project.totalTasks ?? 0;
   const doneTasks = project.doneTasks ?? 0;
 
-  // Progress fill color
   const getProgressColor = () => {
-    if (progress >= 100) return 'bg-emerald-400';
-    if (progress >= 60) return 'bg-sky-400';
-    if (progress >= 25) return 'bg-indigo-400';
-    return 'bg-slate-600';
+    if (progress >= 100) return 'bg-[#34C759]';
+    if (progress >= 70) return 'bg-[#0071E3]';
+    if (progress >= 30) return 'bg-[#5856D6]';
+    return 'bg-[#FF9500]';
   };
 
   return (
     <div
       onClick={() => navigate(`/projects/${project.id}`)}
-      className="group relative p-5 bg-[#121520] hover:bg-[#181d2c] border border-white/[0.08] hover:border-white/[0.18] rounded-2xl transition-all duration-200 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] cursor-pointer active:scale-[0.99]"
+      className="group relative p-6 bg-white hover:bg-[#FAFBFD] border border-black/[0.06] hover:border-[#0071E3]/30 rounded-2xl transition-all duration-200 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03),0_12px_28px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06),0_24px_48px_rgba(0,0,0,0.03)] hover:-translate-y-0.5 cursor-pointer"
     >
       <div>
         {/* Top Header: ID Key, Status & More Menu */}
         <div className="flex items-center justify-between mb-3.5">
-          <span className="font-mono text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-md">
+          <span className="font-mono text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-lg shadow-2xs">
             PRJ-{project.id.slice(0, 4).toUpperCase()}
           </span>
 
@@ -66,7 +64,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               trigger={
                 <button
                   type="button"
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-colors"
                   title="Project options"
                 >
                   <MoreVertical className="w-4 h-4" />
@@ -101,31 +99,30 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
 
         {/* Project Title */}
-        <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-sky-300 transition-colors mb-1.5 leading-snug">
+        <h3 className="text-base font-semibold text-[#1D1D1F] group-hover:text-[#0071E3] transition-colors mb-2 leading-snug">
           {project.title}
         </h3>
 
         {/* Project Description */}
         {project.description ? (
-          <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3.5">
+          <p className="text-xs text-[#6E6E73] line-clamp-2 leading-relaxed mb-4">
             {project.description}
           </p>
         ) : (
-          <p className="text-xs text-slate-600 italic mb-3.5">No description provided</p>
+          <p className="text-xs text-[#86868B] italic mb-4">No description provided</p>
         )}
 
-        {/* Dynamic Project Progress Bar */}
+        {/* Apple Dynamic Progress Bar */}
         <div className="mb-4">
-          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1.5">
-            <span className="text-slate-500 flex items-center gap-1">
-              <FolderKanban className="w-3 h-3 text-slate-500" />
-              {totalTasks > 0 ? `${doneTasks}/${totalTasks} tasks done` : 'No tasks recorded'}
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#6E6E73] mb-1.5">
+            <span className="font-medium text-[#6E6E73]">
+              {totalTasks > 0 ? `${doneTasks}/${totalTasks} tasks closed` : 'No tasks assigned'}
             </span>
-            <span className="font-semibold text-slate-200">{progress}%</span>
+            <span className="font-bold text-[#1D1D1F]">{progress}%</span>
           </div>
-          <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-black/[0.04] rounded-full overflow-hidden p-[1px]">
             <div
-              className={`h-full ${getProgressColor()} transition-all duration-500`}
+              className={`h-full ${getProgressColor()} rounded-full transition-all duration-500`}
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -133,20 +130,20 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       {/* Footer Ribbon: Due date and Priority badge */}
-      <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-slate-500">
-        <div className="flex items-center gap-1.5">
+      <div className="pt-3.5 border-t border-black/[0.05] flex items-center justify-between text-xs text-[#6E6E73]">
+        <div className="flex items-center gap-1.5 text-[11px] font-mono">
           {isCompleted ? (
-            <span className="inline-flex items-center text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 text-[10px] font-semibold">
+            <span className="inline-flex items-center text-[#34C759] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold text-[10px]">
               <CheckCircle2 className="w-3 h-3 mr-1" />
               Completed
             </span>
           ) : project.dueDate ? (
-            <span className="inline-flex items-center text-slate-400">
-              <Calendar className="w-3.5 h-3.5 mr-1 text-slate-500" />
+            <span className="inline-flex items-center text-[#6E6E73]">
+              <Calendar className="w-3.5 h-3.5 mr-1 text-[#86868B]" />
               {formatDate(project.dueDate)}
             </span>
           ) : (
-            <span className="text-slate-600">No deadline</span>
+            <span className="text-[#86868B]">No deadline</span>
           )}
         </div>
 
@@ -155,9 +152,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             label={project.priorityId.replace('PRIO_', '')}
             variant={resolveBadgeVariant(project.priorityId)}
           />
-          <div className="w-6 h-6 rounded-lg bg-white/[0.04] group-hover:bg-sky-500/20 border border-white/[0.06] group-hover:border-sky-500/30 flex items-center justify-center transition-all">
-            <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-sky-300 group-hover:translate-x-0.5 transition-all" />
-          </div>
+          <ArrowRight className="w-4 h-4 text-[#86868B] group-hover:text-[#0071E3] group-hover:translate-x-1 transition-all" />
         </div>
       </div>
     </div>

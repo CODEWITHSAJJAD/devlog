@@ -37,7 +37,7 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
     >
       <div className="space-y-6">
         {/* Status & Priority Row */}
-        <div className="flex items-center gap-2 flex-wrap pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2 flex-wrap pb-4 border-b border-black/[0.06]">
           <Badge
             label={project.statusId.replace('PROJ_STAT_', '')}
             variant={resolveBadgeVariant(project.statusId)}
@@ -48,7 +48,7 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
             variant={resolveBadgeVariant(project.priorityId)}
           />
           {isCompleted && (
-            <span className="inline-flex items-center text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-mono font-semibold">
+            <span className="inline-flex items-center text-xs text-[#34C759] bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 font-mono font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
               Completed {project.completedAt ? formatDate(project.completedAt) : ''}
             </span>
@@ -57,35 +57,35 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
 
         {/* Description */}
         <div>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+          <h4 className="text-xs font-semibold text-[#1D1D1F] mb-1.5">
             Scope & Objectives
           </h4>
-          <div className="p-4 bg-[#0a0c10] border border-white/[0.06] rounded-xl text-xs text-slate-300 leading-relaxed whitespace-pre-wrap min-h-[5rem] shadow-inner font-sans">
+          <div className="p-4 bg-[#F5F5F7] border border-black/[0.06] rounded-xl text-xs text-[#1D1D1F] leading-relaxed whitespace-pre-wrap min-h-[5rem] font-sans">
             {project.description || 'No detailed scope provided for this project.'}
           </div>
         </div>
 
         {/* Timeline & Metadata Grid */}
         <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="p-3.5 bg-[#0a0c10] border border-white/[0.06] rounded-xl shadow-inner">
-            <span className="text-slate-500 block mb-1 flex items-center gap-1.5 font-mono text-[11px]">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" /> Target Deadline
+          <div className="p-3.5 bg-[#F5F5F7] border border-black/[0.06] rounded-xl">
+            <span className="text-[#86868B] block mb-1 flex items-center gap-1.5 font-mono text-[11px]">
+              <Calendar className="w-3.5 h-3.5 text-[#0071E3]" /> Target Deadline
             </span>
-            <span className="text-slate-200 font-medium font-mono">
+            <span className="text-[#1D1D1F] font-semibold font-mono">
               {project.dueDate ? formatDate(project.dueDate) : 'No deadline scheduled'}
             </span>
           </div>
 
-          <div className="p-3.5 bg-[#0a0c10] border border-white/[0.06] rounded-xl shadow-inner">
-            <span className="text-slate-500 block mb-1 flex items-center gap-1.5 font-mono text-[11px]">
-              <Clock className="w-3.5 h-3.5 text-slate-400" /> Created At
+          <div className="p-3.5 bg-[#F5F5F7] border border-black/[0.06] rounded-xl">
+            <span className="text-[#86868B] block mb-1 flex items-center gap-1.5 font-mono text-[11px]">
+              <Clock className="w-3.5 h-3.5 text-[#0071E3]" /> Created At
             </span>
-            <span className="text-slate-200 font-medium font-mono">{formatDate(project.createdAt)}</span>
+            <span className="text-[#1D1D1F] font-semibold font-mono">{formatDate(project.createdAt)}</span>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between pt-4 border-t border-black/[0.06]">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -93,9 +93,9 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 onClose();
                 onEdit(project);
               }}
-              className="inline-flex items-center px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-white/[0.05] hover:bg-white/10 rounded-xl transition-colors border border-white/[0.06] active:scale-95"
+              className="inline-flex items-center px-3.5 py-1.5 text-xs text-[#1D1D1F] hover:bg-black/[0.05] rounded-xl transition-colors border border-black/[0.08] active:scale-95 bg-white shadow-2xs"
             >
-              <Edit2 className="w-3.5 h-3.5 mr-1.5" />
+              <Edit2 className="w-3.5 h-3.5 mr-1.5 text-[#6E6E73]" />
               Edit Details
             </button>
             <button
@@ -104,7 +104,7 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 onClose();
                 onDelete(project);
               }}
-              className="inline-flex items-center px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl transition-colors border border-rose-500/20 active:scale-95"
+              className="inline-flex items-center px-3.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded-xl transition-colors border border-rose-200 active:scale-95 bg-white shadow-2xs"
             >
               <Trash2 className="w-3.5 h-3.5 mr-1.5" />
               Delete
@@ -117,11 +117,11 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
               onClose();
               navigate(`/projects/${project.id}`);
             }}
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_10px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-[0.98]"
           >
-            <FolderKanban className="w-3.5 h-3.5 mr-1.5" />
-            Open Kanban Board
-            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            <FolderKanban className="w-3.5 h-3.5" />
+            <span>Open Kanban Board</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
           </button>
         </div>
       </div>

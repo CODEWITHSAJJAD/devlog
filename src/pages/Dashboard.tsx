@@ -6,12 +6,12 @@ import {
   LayoutGrid,
   List,
   Search,
-  Sparkles,
   TrendingUp,
   Layers,
+  CheckCircle2,
+  Sparkles,
   ArrowUpRight,
   ShieldCheck,
-  CheckCircle2,
 } from 'lucide-react';
 import { useFetchProjects } from '../hooks/useFetchProjects';
 import { useLearnings } from '../hooks/useLearnings';
@@ -34,7 +34,7 @@ export const Dashboard: React.FC = () => {
   const [viewingProject, setViewingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
-  // View & Filter states
+  // View & Filter states (Default to Grid view for Apple-grade card showcase)
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'COMPLETED'>('ALL');
   const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
@@ -44,13 +44,13 @@ export const Dashboard: React.FC = () => {
   const totalProjects = projects.length;
   const completedProjects = projects.filter((p) => p.statusId === 'PROJ_STAT_COMPLETED').length;
   const activeProjects = totalProjects - completedProjects;
+  const highPriorityCount = projects.filter((p) => p.priorityId === 'PRIO_HIGH').length;
 
   const totalProgressSum = projects.reduce(
     (sum, p) => sum + (p.progress !== undefined ? p.progress : p.statusId === 'PROJ_STAT_COMPLETED' ? 100 : 0),
     0
   );
-  const completionRate = totalProjects > 0 ? Math.round(totalProgressSum / totalProjects) : 0;
-  const highPriorityCount = projects.filter((p) => p.priorityId === 'PRIO_HIGH').length;
+  const aggregateProgress = totalProjects > 0 ? Math.round(totalProgressSum / totalProjects) : 0;
 
   // Filter logic
   const filteredProjects = projects.filter((p) => {
@@ -71,45 +71,39 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-[96rem] mx-auto space-y-7 select-none">
-      {/* 1. Header & Primary Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/[0.08]">
+      {/* 1. Apple Clean Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/[0.06]">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest text-sky-400 bg-sky-500/10 border border-sky-500/20 font-bold">
-              Mission Control
-            </span>
-            <span className="text-slate-500 text-xs font-mono">• Production Tier</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-            Projects Mission Control
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#1D1D1F]">
+            Projects
           </h1>
-          <p className="text-xs text-slate-400 mt-1 max-w-xl leading-relaxed">
-            High-performance sprint boards, architectural initiatives, and cross-project knowledge capture.
+          <p className="text-xs text-[#6E6E73] mt-1 max-w-xl">
+            Workspace initiatives, sprint milestones, and continuous technical learnings.
           </p>
         </div>
 
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-[0_2px_12px_rgba(14,165,233,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all active:scale-[0.98] w-fit"
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 w-fit"
         >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Create New Project
+          <Plus className="w-4 h-4" />
+          <span>New Project</span>
         </button>
       </div>
 
-      {/* 2. Asymmetric Executive Telemetry Bento */}
+      {/* 2. Restored Executive Telemetry Bento (Apple Light Architecture) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Hero Tile: Sprint Completion Gauge */}
-        <div className="md:col-span-5 p-5 bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between relative overflow-hidden">
+        <div className="md:col-span-5 p-5 bg-white border border-black/[0.06] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
-                <TrendingUp className="w-3.5 h-3.5 text-sky-400" /> Sprint Delivery Rate
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#6E6E73] flex items-center gap-1.5 font-semibold">
+                <TrendingUp className="w-3.5 h-3.5 text-[#0071E3]" /> Sprint Delivery Rate
               </span>
-              <div className="text-3xl font-black text-white tracking-tight mt-2">
-                {completionRate}%
+              <div className="text-3xl font-extrabold text-[#1D1D1F] tracking-tight mt-2 font-display">
+                {aggregateProgress}%
               </div>
-              <p className="text-xs text-slate-400 mt-1 font-mono">
+              <p className="text-xs text-[#86868B] mt-1 font-mono">
                 {completedProjects} of {totalProjects} projects finalized (weighted progress)
               </p>
             </div>
@@ -123,7 +117,7 @@ export const Dashboard: React.FC = () => {
                   r="26"
                   stroke="currentColor"
                   strokeWidth="5"
-                  className="text-white/[0.06]"
+                  className="text-black/[0.05]"
                   fill="transparent"
                 />
                 <circle
@@ -133,97 +127,106 @@ export const Dashboard: React.FC = () => {
                   stroke="currentColor"
                   strokeWidth="5"
                   strokeDasharray={163}
-                  strokeDashoffset={163 - (163 * completionRate) / 100}
-                  className="text-sky-400 transition-all duration-700 ease-out"
+                  strokeDashoffset={163 - (163 * aggregateProgress) / 100}
+                  className="text-[#0071E3] transition-all duration-700 ease-out"
                   fill="transparent"
                 />
               </svg>
-              <CheckCircle2 className="w-5 h-5 text-sky-400 absolute" />
+              <CheckCircle2 className="w-5 h-5 text-[#0071E3] absolute" />
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex items-center justify-between text-[11px] font-mono text-[#6E6E73]">
             <span>{activeProjects} in development</span>
-            <span className="text-emerald-400 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" /> High Reliability
+            <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
+              <ShieldCheck className="w-3 h-3 text-emerald-600" /> High Reliability
             </span>
           </div>
         </div>
 
         {/* Telemetry Tile 2: Active Initiatives & Priority */}
-        <div className="md:col-span-4 p-5 bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between">
+        <div className="md:col-span-4 p-5 bg-white border border-black/[0.06] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
-              <Layers className="w-3.5 h-3.5 text-rose-400" /> Active Initiatives
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#6E6E73] flex items-center gap-1.5 font-semibold">
+              <Layers className="w-3.5 h-3.5 text-[#FF3B30]" /> Active Initiatives
             </span>
-            <div className="text-3xl font-black text-white tracking-tight mt-2">
-              {activeProjects} <span className="text-slate-500 text-sm font-normal">Active</span>
+            <div className="text-3xl font-extrabold text-[#1D1D1F] tracking-tight mt-2 font-display">
+              {activeProjects} <span className="text-[#86868B] text-sm font-normal">Active</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center gap-3 text-[11px] font-mono text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+          <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex items-center gap-3 text-[11px] font-mono text-[#6E6E73]">
+            <span className="flex items-center gap-1.5 font-medium text-[#FF3B30]">
+              <span className="w-2 h-2 rounded-full bg-[#FF3B30] animate-pulse" />
               {highPriorityCount} High Priority
             </span>
-            <span>•</span>
-            <span className="text-slate-500">{totalProjects - highPriorityCount} Standard</span>
+            <span className="text-[#86868B]/40">•</span>
+            <span className="text-[#86868B]">{totalProjects - highPriorityCount} Standard</span>
           </div>
         </div>
 
-        {/* Telemetry Tile 3: Knowledge Base Link */}
+        {/* Telemetry Tile 3: Second Brain / Knowledge Base Link */}
         <Link
           to="/knowledge-base"
-          className="md:col-span-3 p-5 bg-[#121520] hover:bg-[#181d2c] border border-white/[0.08] hover:border-emerald-500/30 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between transition-all group cursor-pointer"
+          className="md:col-span-3 p-5 bg-white hover:bg-[#FAFBFD] border border-black/[0.06] hover:border-[#0071E3]/30 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer"
         >
           <div className="flex items-start justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5 font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Second Brain
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#6E6E73] flex items-center gap-1.5 font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Second Brain
             </span>
-            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <ArrowUpRight className="w-4 h-4 text-[#86868B] group-hover:text-[#0071E3] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </div>
 
           <div>
-            <div className="text-3xl font-black text-white tracking-tight mt-2">
+            <div className="text-3xl font-extrabold text-[#1D1D1F] tracking-tight mt-2 font-display">
               {learnings.length}
             </div>
-            <div className="text-[11px] font-mono text-emerald-400/90 mt-1">
+            <div className="text-[11px] font-mono text-emerald-700 mt-1 font-medium">
               Cross-project learnings cataloged
             </div>
           </div>
 
-          <div className="mt-4 pt-3.5 border-t border-white/[0.06] text-[10px] font-mono text-slate-500">
-            Obsidian-grade reader ready →
+          <div className="mt-4 pt-3.5 border-t border-black/[0.06] text-[10px] font-mono text-[#86868B] group-hover:text-[#0071E3] transition-colors flex items-center justify-between">
+            <span>Obsidian-grade reader ready</span>
+            <span>&rarr;</span>
           </div>
         </Link>
       </div>
 
-      {/* 3. Filter Bar & View Toggle */}
+      {/* 3. Filter & View Controls Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-        {/* Left: Search & Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Left: Search & Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-3">
           {/* Search Input */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#86868B]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter by title, scope, PRJ-..."
-              className="pl-8 pr-3 py-1.5 bg-[#121520] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors w-52 md:w-64 font-mono"
+              placeholder="Search projects..."
+              className="pl-9 pr-3 py-2 bg-white border border-black/[0.08] hover:border-black/[0.16] focus:border-[#0071E3] focus:ring-2 focus:ring-[#0071E3]/20 rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] transition-all w-52 sm:w-64 shadow-2xs"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2 text-[#86868B] hover:text-[#1D1D1F] text-xs"
+              >
+                ×
+              </button>
+            )}
           </div>
 
-          {/* Status Tabs */}
-          <div className="flex items-center p-0.5 bg-[#121520] border border-white/[0.08] rounded-xl">
+          {/* Status Segmented Buttons */}
+          <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
             {(['ALL', 'ACTIVE', 'COMPLETED'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setStatusFilter(tab)}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                   statusFilter === tab
-                    ? 'bg-white/10 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
+                    ? 'bg-white text-[#1D1D1F] font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+                    : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-white/40'
                 }`}
               >
                 {tab.charAt(0) + tab.slice(1).toLowerCase()}
@@ -231,29 +234,30 @@ export const Dashboard: React.FC = () => {
             ))}
           </div>
 
-          {/* Priority Filter */}
+          {/* Priority Filter Dropdown */}
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-[#121520] border border-white/[0.08] rounded-xl text-xs text-slate-300 focus:outline-none focus:border-sky-500 font-mono"
+            className="px-3 py-2 bg-white border border-black/[0.08] hover:border-black/[0.16] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] shadow-2xs transition-all"
           >
             <option value="ALL">All Priorities</option>
+            <option value="PRIO_CRITICAL">Critical Priority</option>
             <option value="PRIO_HIGH">High Priority</option>
             <option value="PRIO_MEDIUM">Medium Priority</option>
             <option value="PRIO_LOW">Low Priority</option>
           </select>
         </div>
 
-        {/* Right: Grid / Table View Switcher */}
-        <div className="flex items-center self-end sm:self-auto p-0.5 bg-[#121520] border border-white/[0.08] rounded-xl">
+        {/* Right: Grid vs Table Toggle */}
+        <div className="flex items-center self-end sm:self-auto bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-lg transition-all ${
               viewMode === 'grid'
-                ? 'bg-white/10 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-[#1D1D1F] shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-white/40'
             }`}
-            title="Bento Grid View"
+            title="Card Grid View (Default)"
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
@@ -261,8 +265,8 @@ export const Dashboard: React.FC = () => {
             onClick={() => setViewMode('table')}
             className={`p-1.5 rounded-lg transition-all ${
               viewMode === 'table'
-                ? 'bg-white/10 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-[#1D1D1F] shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-white/40'
             }`}
             title="Dense Table View"
           >
@@ -271,57 +275,53 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. Main Content Area (4-State) */}
-      {/* 1. Loading State */}
+      {/* 4. Main Content: Cards Grid (Default) or Table */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-48 bg-[#121520] border border-white/[0.06] rounded-2xl animate-pulse p-6"
+              className="h-56 bg-white border border-black/[0.05] rounded-2xl animate-pulse p-6 shadow-sm"
             />
           ))}
         </div>
       )}
 
-      {/* 2. Error State */}
       {error && !isLoading && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-2xl flex items-center justify-between">
+        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center justify-between">
           <span>{error}</span>
           <button
             onClick={() => refetch()}
-            className="text-white bg-rose-600 px-3 py-1 rounded-lg text-xs font-medium hover:bg-rose-500"
+            className="text-white bg-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-500 shadow-xs"
           >
             Retry
           </button>
         </div>
       )}
 
-      {/* 3. Empty State */}
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <div className="py-24 text-center border border-dashed border-white/[0.08] rounded-2xl bg-[#121520]/50">
-          <FolderKanban className="w-12 h-12 mx-auto text-slate-600 mb-3" />
-          <h3 className="text-sm font-semibold text-slate-200">No projects found</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
+        <div className="py-24 text-center border border-dashed border-black/[0.1] rounded-2xl bg-white shadow-xs">
+          <FolderKanban className="w-12 h-12 mx-auto text-[#86868B] mb-3" />
+          <h3 className="text-base font-semibold text-[#1D1D1F]">No projects found</h3>
+          <p className="text-xs text-[#6E6E73] mt-1.5 max-w-sm mx-auto leading-relaxed">
             {searchQuery || statusFilter !== 'ALL' || priorityFilter !== 'ALL'
-              ? 'No projects match your current filters.'
-              : 'Create your first project to start tracking engineering sprints and tickets.'}
+              ? 'No projects match your current filter criteria.'
+              : 'Create a new project to start tracking tickets and technical progress.'}
           </p>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="mt-5 inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl shadow-sm transition-all active:scale-[0.98]"
+            className="mt-5 inline-flex items-center gap-1.5 px-4 py-2 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95"
           >
-            <Plus className="w-4 h-4 mr-1.5" />
-            Create Project
+            <Plus className="w-4 h-4" />
+            <span>Create Project</span>
           </button>
         </div>
       )}
 
-      {/* 4. Data State */}
       {!isLoading && !error && filteredProjects.length > 0 && (
         <>
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((project) => (
                 <ProjectCard
                   key={project.id}
@@ -333,56 +333,49 @@ export const Dashboard: React.FC = () => {
               ))}
             </div>
           ) : (
-            <ProjectTableView
-              projects={filteredProjects}
-              onView={setViewingProject}
-              onEdit={setEditingProject}
-              onDelete={setDeletingProject}
-            />
+            <div className="bg-white rounded-2xl border border-black/[0.06] shadow-xs overflow-hidden">
+              <ProjectTableView
+                projects={filteredProjects}
+                onView={setViewingProject}
+                onEdit={setEditingProject}
+                onDelete={setDeletingProject}
+              />
+            </div>
           )}
         </>
       )}
 
-      {/* Modals Suite */}
+      {/* Create Project Modal */}
       <CreateProjectModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={createProject}
       />
 
+      {/* Edit Project Modal */}
       <EditProjectModal
         isOpen={!!editingProject}
         project={editingProject}
         onClose={() => setEditingProject(null)}
-        onSubmit={async (id, updates) => {
-          const res = await updateProject(id, updates);
-          if (res.success) {
-            setEditingProject(null);
-          }
-          return res;
-        }}
+        onSubmit={updateProject}
       />
 
+      {/* Project Details Modal */}
       <ProjectDetailsModal
         isOpen={!!viewingProject}
         project={viewingProject}
         onClose={() => setViewingProject(null)}
-        onEdit={() => {
-          setEditingProject(viewingProject);
-          setViewingProject(null);
-        }}
-        onDelete={() => {
-          setDeletingProject(viewingProject);
-          setViewingProject(null);
-        }}
+        onEdit={(proj) => setEditingProject(proj)}
+        onDelete={(proj) => setDeletingProject(proj)}
       />
 
+      {/* Delete Project Modal */}
       <DeleteConfirmModal
         isOpen={!!deletingProject}
         title="Delete Project"
         itemName={deletingProject?.title || ''}
         itemType="Project"
-        description="will be soft-deleted. Attached tasks will remain in the database."
+        description="will be soft-deleted. Historical audit records remain intact."
         onClose={() => setDeletingProject(null)}
         onConfirm={async () => {
           if (!deletingProject) return { success: false };

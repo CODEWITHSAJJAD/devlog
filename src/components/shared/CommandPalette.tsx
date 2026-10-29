@@ -93,23 +93,23 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/30 backdrop-blur-md transition-opacity"
       />
 
       {/* Palette Container */}
-      <div className="relative w-full max-w-2xl bg-[#0e1015] border border-white/[0.1] rounded-2xl shadow-[0_32px_96px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-2xl bg-white/95 backdrop-blur-2xl border border-black/[0.08] rounded-2xl shadow-[0_32px_80px_rgba(0,0,0,0.16)] overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-white/[0.08] gap-3">
-          <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-black/[0.06] gap-3">
+          <Search className="w-4 h-4 text-[#86868B] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command or search projects, tasks, learnings..."
-            className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
+            className="w-full bg-transparent text-sm text-[#1D1D1F] placeholder-[#86868B] focus:outline-none"
           />
-          <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-500 bg-white/[0.06] border border-white/[0.08]">
+          <kbd className="px-2 py-0.5 rounded text-[11px] font-mono text-[#86868B] bg-[#F5F5F7] border border-black/[0.08]">
             ESC
           </kbd>
         </div>
@@ -118,7 +118,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="max-h-[60vh] overflow-y-auto p-2 space-y-4">
           {/* Quick Actions */}
           <div>
-            <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+            <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#86868B]">
               Quick Actions
             </div>
             <div className="space-y-0.5">
@@ -127,15 +127,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onNewProject();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors group"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-[#E8F2FE] border border-[#0071E3]/20 text-[#0071E3] flex items-center justify-center">
                     <Plus className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium">Create New Project</span>
                 </div>
-                <span className="text-[10px] font-mono text-slate-500 group-hover:text-slate-300">
+                <span className="text-[10px] font-mono text-[#86868B] group-hover:text-[#0071E3]">
                   New initiative &rarr;
                 </span>
               </button>
@@ -145,15 +145,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onNewLearning();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors group"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium">Record Technical Learning</span>
                 </div>
-                <span className="text-[10px] font-mono text-slate-500 group-hover:text-slate-300">
+                <span className="text-[10px] font-mono text-[#86868B] group-hover:text-emerald-600">
                   Document lesson &rarr;
                 </span>
               </button>
@@ -163,7 +163,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {/* Projects Results */}
           {filteredProjects.length > 0 && (
             <div>
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#86868B]">
                 Projects ({filteredProjects.length})
               </div>
               <div className="space-y-0.5">
@@ -174,15 +174,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onClose();
                       navigate(`/projects/${proj.id}`);
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors group"
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors group"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="font-mono text-[10px] text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-1.5 py-0.5 rounded">
+                      <span className="font-mono text-[10px] text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 py-0.5 rounded font-bold">
                         PRJ-{proj.id.slice(0, 4).toUpperCase()}
                       </span>
                       <span className="font-medium truncate max-w-sm">{proj.title}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 group-hover:text-slate-300 flex items-center gap-1">
+                    <span className="text-[10px] text-[#86868B] group-hover:text-[#0071E3] flex items-center gap-1 font-medium">
                       Open Board <ArrowRight className="w-3 h-3" />
                     </span>
                   </button>
@@ -194,7 +194,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {/* Tasks Results */}
           {filteredTasks.length > 0 && (
             <div>
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#86868B]">
                 Kanban Tasks ({filteredTasks.length})
               </div>
               <div className="space-y-0.5">
@@ -205,15 +205,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onClose();
                       navigate(`/projects/${task.projectId}`);
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors group"
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors group"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                      <span className="font-mono text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">
                         TSK-{task.id.slice(0, 4).toUpperCase()}
                       </span>
                       <span className="font-medium truncate max-w-sm">{task.title}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 group-hover:text-slate-300 flex items-center gap-1">
+                    <span className="text-[10px] text-[#86868B] group-hover:text-[#0071E3] flex items-center gap-1 font-medium">
                       View Lane <ArrowRight className="w-3 h-3" />
                     </span>
                   </button>
@@ -225,7 +225,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {/* Learnings Results */}
           {filteredLearnings.length > 0 && (
             <div>
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#86868B]">
                 Technical Learnings ({filteredLearnings.length})
               </div>
               <div className="space-y-0.5">
@@ -236,15 +236,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onClose();
                       navigate('/knowledge-base');
                     }}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors group"
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors group"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center flex-shrink-0">
                         <BookOpen className="w-3.5 h-3.5" />
                       </div>
                       <span className="font-medium truncate max-w-sm">{learning.title}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 group-hover:text-slate-300 flex items-center gap-1">
+                    <span className="text-[10px] text-[#86868B] group-hover:text-[#0071E3] flex items-center gap-1 font-medium">
                       Read Note <ArrowRight className="w-3 h-3" />
                     </span>
                   </button>
@@ -258,20 +258,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             filteredProjects.length === 0 &&
             filteredTasks.length === 0 &&
             filteredLearnings.length === 0 && (
-              <div className="py-12 text-center text-xs font-mono text-slate-500">
+              <div className="py-12 text-center text-xs font-mono text-[#86868B]">
                 No commands or items matching "{query}"
               </div>
             )}
         </div>
 
         {/* Footer Ribbon */}
-        <div className="px-4 py-2.5 bg-black/40 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-slate-500">
+        <div className="px-4 py-2.5 bg-[#F5F5F7] border-t border-black/[0.06] flex items-center justify-between text-[11px] font-mono text-[#86868B]">
           <div className="flex items-center gap-3">
             <span>↑↓ Navigate</span>
             <span>↵ Select</span>
             <span>ESC Close</span>
           </div>
-          <span className="text-slate-600">DevLog Universal Command Engine</span>
+          <span className="text-[#86868B]/80">DevLog Spotlight Search</span>
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@ import {
   Edit2,
   Trash2,
   ExternalLink,
-  ArrowRight,
 } from 'lucide-react';
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { DropdownMenu } from '../shared/DropdownMenu';
@@ -31,21 +30,21 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="w-full bg-[#121520] border border-white/[0.08] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden">
+    <div className="w-full bg-white border border-black/[0.06] rounded-2xl overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/[0.06] bg-black/30 text-[10px] font-mono uppercase tracking-wider text-slate-400">
-              <th className="py-3 px-4 font-semibold">Key</th>
-              <th className="py-3 px-4 font-semibold">Project Title & Scope</th>
-              <th className="py-3 px-4 font-semibold">Progress</th>
-              <th className="py-3 px-4 font-semibold">Status</th>
-              <th className="py-3 px-4 font-semibold">Priority</th>
-              <th className="py-3 px-4 font-semibold">Target Deadline</th>
-              <th className="py-3 px-4 text-right font-semibold">Actions</th>
+            <tr className="border-b border-black/[0.06] bg-[#F9F9FB] text-[11px] font-semibold text-[#6E6E73]">
+              <th className="py-3 px-4">Key</th>
+              <th className="py-3 px-4">Project Name</th>
+              <th className="py-3 px-4">Progress</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Priority</th>
+              <th className="py-3 px-4">Due Date</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04] text-xs">
+          <tbody className="divide-y divide-black/[0.04] text-xs">
             {projects.map((project) => {
               const isCompleted = project.statusId === 'PROJ_STAT_COMPLETED';
               const progress = project.progress !== undefined ? project.progress : isCompleted ? 100 : 0;
@@ -56,49 +55,49 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                 <tr
                   key={project.id}
                   onClick={() => navigate(`/projects/${project.id}`)}
-                  className="hover:bg-white/[0.03] transition-colors cursor-pointer group"
+                  className="hover:bg-[#F5F5F7] transition-colors cursor-pointer group"
                 >
                   {/* Key */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
-                    <span className="font-mono text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-md">
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <span className="font-mono text-[11px] text-[#0071E3] font-bold bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-md">
                       PRJ-{project.id.slice(0, 4).toUpperCase()}
                     </span>
                   </td>
 
                   {/* Title & Scope */}
-                  <td className="py-3.5 px-4 min-w-[240px]">
-                    <div className="font-semibold text-white tracking-tight group-hover:text-sky-300 transition-colors">
+                  <td className="py-3 px-4 min-w-[220px]">
+                    <div className="font-semibold text-[#1D1D1F] group-hover:text-[#0071E3] transition-colors">
                       {project.title}
                     </div>
                     {project.description && (
-                      <div className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                      <div className="text-[11px] text-[#6E6E73] line-clamp-1 mt-0.5">
                         {project.description}
                       </div>
                     )}
                   </td>
 
                   {/* Progress Column */}
-                  <td className="py-3.5 px-4 whitespace-nowrap min-w-[120px]">
+                  <td className="py-3 px-4 whitespace-nowrap min-w-[140px]">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+                      <div className="w-16 h-2 bg-black/[0.05] rounded-full overflow-hidden p-[1px]">
                         <div
-                          className={`h-full ${progress >= 100 ? 'bg-emerald-400' : progress >= 50 ? 'bg-sky-400' : 'bg-indigo-400'} transition-all`}
+                          className={`h-full ${progress >= 100 ? 'bg-[#34C759]' : progress >= 50 ? 'bg-[#0071E3]' : 'bg-[#5856D6]'} rounded-full transition-all`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>
-                      <span className="font-mono text-[11px] font-semibold text-slate-300">
+                      <span className="font-mono text-[11px] font-bold text-[#1D1D1F]">
                         {progress}%
                       </span>
                     </div>
                     {totalTasks > 0 && (
-                      <div className="text-[10px] font-mono text-slate-500 mt-0.5">
-                        {doneTasks}/{totalTasks} tasks
+                      <div className="text-[10px] text-[#86868B] mt-0.5 font-mono">
+                        {doneTasks}/{totalTasks} closed
                       </div>
                     )}
                   </td>
 
                   {/* Status */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap">
                     <Badge
                       label={project.statusId.replace('PROJ_STAT_', '')}
                       variant={resolveBadgeVariant(project.statusId)}
@@ -107,7 +106,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   </td>
 
                   {/* Priority */}
-                  <td className="py-3.5 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap">
                     <Badge
                       label={project.priorityId.replace('PRIO_', '')}
                       variant={resolveBadgeVariant(project.priorityId)}
@@ -115,44 +114,44 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   </td>
 
                   {/* Target Deadline */}
-                  <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] text-slate-400">
+                  <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px] text-[#6E6E73]">
                     {isCompleted ? (
-                      <span className="inline-flex items-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md text-[10px] font-semibold">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
+                      <span className="inline-flex items-center text-[#34C759] font-medium text-[11px]">
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                         Completed
                       </span>
                     ) : project.dueDate ? (
-                      <span className="inline-flex items-center text-slate-400">
-                        <Calendar className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                      <span className="inline-flex items-center text-[#6E6E73]">
+                        <Calendar className="w-3.5 h-3.5 mr-1 text-[#86868B]" />
                         {formatDate(project.dueDate)}
                       </span>
                     ) : (
-                      <span className="text-slate-600">No deadline</span>
+                      <span className="text-[#86868B]">—</span>
                     )}
                   </td>
 
                   {/* Actions */}
                   <td
-                    className="py-3.5 px-4 text-right whitespace-nowrap"
+                    className="py-3 px-4 text-right whitespace-nowrap"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => navigate(`/projects/${project.id}`)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                        className="p-1.5 rounded-lg text-[#86868B] hover:text-[#0071E3] hover:bg-black/[0.04] transition-colors"
                         title="Open Kanban Board"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-4 h-4" />
                       </button>
 
                       <DropdownMenu
                         trigger={
                           <button
                             type="button"
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                            className="p-1.5 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors"
                             title="More options"
                           >
-                            <MoreVertical className="w-3.5 h-3.5" />
+                            <MoreVertical className="w-4 h-4" />
                           </button>
                         }
                         items={[
@@ -165,11 +164,6 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                             label: 'Edit Project',
                             icon: <Edit2 className="w-3.5 h-3.5" />,
                             onClick: () => onEdit(project),
-                          },
-                          {
-                            label: 'Open Kanban Board',
-                            icon: <ArrowRight className="w-3.5 h-3.5" />,
-                            onClick: () => navigate(`/projects/${project.id}`),
                           },
                           'divider',
                           {
