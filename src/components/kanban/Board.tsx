@@ -20,7 +20,7 @@ export const Board: React.FC<BoardProps> = ({
   onRecordLearning,
 }) => {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 h-full items-start select-none">
+    <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 h-full items-start select-none touch-pan-x">
       {statuses.map((status) => (
         <Column
           key={status.id}

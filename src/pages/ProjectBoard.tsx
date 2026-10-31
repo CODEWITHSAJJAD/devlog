@@ -187,158 +187,202 @@ export const ProjectBoard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] w-full px-4 sm:px-6 py-4 select-none overflow-hidden space-y-3">
+    <div className="flex flex-col h-[calc(100dvh-3.5rem)] min-h-0 w-full px-3 sm:px-6 py-3 sm:py-4 select-none overflow-hidden space-y-3">
       {/* 1. Apple Project Breadcrumbs & Summary Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-black/[0.06] flex-shrink-0 gap-3">
-        {/* Left: Breadcrumbs & Project Identity */}
-        <div className="flex items-center gap-3">
-          <Link
-            to="/"
-            className="p-1.5 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors"
-            title="Back to Projects"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-black/[0.06] flex-shrink-0 gap-3">
+        {/* Top/Left Row: Breadcrumbs & Project Identity */}
+        <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Link
+              to="/"
+              className="p-1.5 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors flex-shrink-0"
+              title="Back to Projects"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-lg shadow-2xs">
-                PRJ-{projectId?.slice(0, 4).toUpperCase()}
-              </span>
-              <h1 className="text-base font-bold text-[#1D1D1F] tracking-tight">
-                {project?.title || 'Board'}
-              </h1>
-              {project && (
-                <Badge
-                  label={project.statusId.replace('PROJ_STAT_', '')}
-                  variant={resolveBadgeVariant(project.statusId)}
-                  dot
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 sm:px-2 py-0.5 rounded-lg shadow-2xs">
+                  PRJ-{projectId?.slice(0, 4).toUpperCase()}
+                </span>
+                <h1 className="text-sm sm:text-base font-bold text-[#1D1D1F] tracking-tight truncate max-w-[130px] sm:max-w-xs">
+                  {project?.title || 'Board'}
+                </h1>
+                {project && (
+                  <Badge
+                    label={project.statusId.replace('PROJ_STAT_', '')}
+                    variant={resolveBadgeVariant(project.statusId)}
+                    dot
+                  />
+                )}
+              </div>
+
+              {project?.description && (
+                <p className="text-[11px] sm:text-xs text-[#6E6E73] line-clamp-1 mt-0.5 max-w-xl hidden sm:block">
+                  {project.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile-Only Project Options Menu */}
+          <div className="flex items-center gap-1.5 md:hidden flex-shrink-0">
+            {project && (
+              <DropdownMenu
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-xl text-[#86868B] hover:text-[#1D1D1F] border border-black/[0.06] bg-white shadow-2xs cursor-pointer"
+                    title="Project settings"
+                  >
+                    <MoreVertical className="w-3.5 h-3.5" />
+                  </button>
+                }
+                items={[
+                  {
+                    label: 'Project Details',
+                    icon: <Eye className="w-3.5 h-3.5" />,
+                    onClick: () => setIsDetailsOpen(true),
+                  },
+                  {
+                    label: 'Edit Project',
+                    icon: <Edit2 className="w-3.5 h-3.5" />,
+                    onClick: () => setIsEditProjectOpen(true),
+                  },
+                  'divider',
+                  {
+                    label: 'Delete Project',
+                    icon: <Trash2 className="w-3.5 h-3.5" />,
+                    danger: true,
+                    onClick: () => setIsDeleteProjectOpen(true),
+                  },
+                ]}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Center & Actions: Segmented Tabs (Board vs Backlog) + Buttons */}
+        <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-3 w-full md:w-auto">
+          {/* Dual Tabs (Board vs Backlog) */}
+          <div className="flex items-center bg-black/[0.04] p-0.5 sm:p-1 rounded-xl border border-black/[0.03]">
+            <button
+              type="button"
+              onClick={() => setViewTab('board')}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                viewTab === 'board'
+                  ? 'bg-white text-[#1D1D1F] shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Board</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewTab('backlog')}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                viewTab === 'backlog'
+                  ? 'bg-white text-[#1D1D1F] shadow-xs'
+                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Backlog</span>
+              {tasks.length > 0 && (
+                <span className="font-mono text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.2 bg-black/[0.06] rounded-md text-[#1D1D1F]">
+                  {tasks.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Right: Progress Meter & Action Buttons */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Progress Indicator (hidden on small mobile) */}
+            <div className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-black/[0.06] shadow-xs text-xs">
+              <div className="w-16 h-2 bg-black/[0.05] rounded-full overflow-hidden p-[1px]">
+                <div
+                  className="h-full bg-[#0071E3] rounded-full transition-all duration-300"
+                  style={{ width: `${completionPercentage}%` }}
                 />
+              </div>
+              <span className="font-mono font-bold text-[#1D1D1F] text-[11px]">
+                {completionPercentage}%
+              </span>
+              <span className="text-[#86868B] text-[11px]">
+                ({doneTasks}/{totalTasks} closed{testingTasks > 0 ? `, ${testingTasks} in test` : ''})
+              </span>
+              {criticalTasks > 0 && (
+                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-md">
+                  <Flame className="w-2.5 h-2.5 text-rose-500" />
+                  {criticalTasks}
+                </span>
               )}
             </div>
 
-            {project?.description && (
-              <p className="text-xs text-[#6E6E73] line-clamp-1 mt-0.5 max-w-xl">
-                {project.description}
-              </p>
+            {/* Desktop Project Options Menu */}
+            {project && (
+              <div className="hidden md:block">
+                <DropdownMenu
+                  trigger={
+                    <button
+                      type="button"
+                      className="p-2 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors border border-black/[0.06] shadow-xs bg-white cursor-pointer"
+                      title="Project settings"
+                    >
+                      <MoreVertical className="w-3.5 h-3.5" />
+                    </button>
+                  }
+                  items={[
+                    {
+                      label: 'Project Details',
+                      icon: <Eye className="w-3.5 h-3.5" />,
+                      onClick: () => setIsDetailsOpen(true),
+                    },
+                    {
+                      label: 'Edit Project',
+                      icon: <Edit2 className="w-3.5 h-3.5" />,
+                      onClick: () => setIsEditProjectOpen(true),
+                    },
+                    'divider',
+                    {
+                      label: 'Delete Project',
+                      icon: <Trash2 className="w-3.5 h-3.5" />,
+                      danger: true,
+                      onClick: () => setIsDeleteProjectOpen(true),
+                    },
+                  ]}
+                />
+              </div>
             )}
-          </div>
-        </div>
 
-        {/* Center: Jira-Style Dual Tabs (Board vs Backlog) */}
-        <div className="flex items-center bg-black/[0.04] p-1 rounded-xl border border-black/[0.03]">
-          <button
-            type="button"
-            onClick={() => setViewTab('board')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              viewTab === 'board'
-                ? 'bg-white text-[#1D1D1F] shadow-xs'
-                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span>Board</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewTab('backlog')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              viewTab === 'backlog'
-                ? 'bg-white text-[#1D1D1F] shadow-xs'
-                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Backlog</span>
-            {tasks.length > 0 && (
-              <span className="font-mono text-[10px] px-1.5 py-0.2 bg-black/[0.06] rounded-md text-[#1D1D1F]">
-                {tasks.length}
-              </span>
+            {/* New Sprint Button (Backlog tab) */}
+            {viewTab === 'backlog' && (
+              <button
+                onClick={() => {
+                  setEditingSprint(null);
+                  setSprintModalMode('create');
+                  setIsSprintModalOpen(true);
+                }}
+                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-white hover:bg-black/[0.03] text-[#1D1D1F] text-xs font-semibold rounded-xl border border-black/[0.08] shadow-2xs transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+              >
+                <Plus className="w-3.5 h-3.5 text-[#0071E3]" />
+                <span className="hidden sm:inline">Sprint / Version</span>
+                <span className="sm:hidden">Sprint</span>
+              </button>
             )}
-          </button>
-        </div>
 
-        {/* Right: Progress Meter & Action Buttons */}
-        <div className="flex items-center gap-3">
-          {/* Progress Indicator */}
-          <div className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-black/[0.06] shadow-xs text-xs">
-            <div className="w-16 h-2 bg-black/[0.05] rounded-full overflow-hidden p-[1px]">
-              <div
-                className="h-full bg-[#0071E3] rounded-full transition-all duration-300"
-                style={{ width: `${completionPercentage}%` }}
-              />
-            </div>
-            <span className="font-mono font-bold text-[#1D1D1F] text-[11px]">
-              {completionPercentage}%
-            </span>
-            <span className="text-[#86868B] text-[11px]">
-              ({doneTasks}/{totalTasks} closed{testingTasks > 0 ? `, ${testingTasks} in test` : ''})
-            </span>
-            {criticalTasks > 0 && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-md">
-                <Flame className="w-2.5 h-2.5 text-rose-500" />
-                {criticalTasks}
-              </span>
-            )}
-          </div>
-
-          {/* Project Options Menu */}
-          {project && (
-            <DropdownMenu
-              trigger={
-                <button
-                  type="button"
-                  className="p-2 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors border border-black/[0.06] shadow-xs bg-white cursor-pointer"
-                  title="Project settings"
-                >
-                  <MoreVertical className="w-3.5 h-3.5" />
-                </button>
-              }
-              items={[
-                {
-                  label: 'Project Details',
-                  icon: <Eye className="w-3.5 h-3.5" />,
-                  onClick: () => setIsDetailsOpen(true),
-                },
-                {
-                  label: 'Edit Project',
-                  icon: <Edit2 className="w-3.5 h-3.5" />,
-                  onClick: () => setIsEditProjectOpen(true),
-                },
-                'divider',
-                {
-                  label: 'Delete Project',
-                  icon: <Trash2 className="w-3.5 h-3.5" />,
-                  danger: true,
-                  onClick: () => setIsDeleteProjectOpen(true),
-                },
-              ]}
-            />
-          )}
-
-          {/* New Sprint Button (Backlog tab) */}
-          {viewTab === 'backlog' && (
+            {/* New Task Button */}
             <button
-              onClick={() => {
-                setEditingSprint(null);
-                setSprintModalMode('create');
-                setIsSprintModalOpen(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-black/[0.03] text-[#1D1D1F] text-xs font-semibold rounded-xl border border-black/[0.08] shadow-2xs transition-all active:scale-95 cursor-pointer"
+              onClick={() => handleOpenCreateTask('TASK_STAT_BACKLOG')}
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 cursor-pointer whitespace-nowrap"
             >
-              <Plus className="w-3.5 h-3.5 text-[#0071E3]" />
-              <span>Sprint / Version</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Task</span>
             </button>
-          )}
-
-          {/* New Task Button */}
-          <button
-            onClick={() => handleOpenCreateTask('TASK_STAT_BACKLOG')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>New Task</span>
-          </button>
+          </div>
         </div>
       </div>
 
@@ -346,22 +390,22 @@ export const ProjectBoard: React.FC = () => {
       {viewTab === 'board' ? (
         <>
           {/* Compact Filter Toolbar for Board */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 flex-shrink-0 gap-2.5">
-            <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 flex-shrink-0 gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto flex-nowrap">
               {/* Search filter input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-2 w-3.5 h-3.5 text-[#86868B]" />
+              <div className="relative flex-shrink-0">
+                <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-[#86868B]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Filter tasks, versions..."
-                  className="pl-8 pr-3 py-1.5 bg-white border border-black/[0.08] hover:border-black/[0.14] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] w-48 sm:w-56 transition-colors shadow-2xs font-mono"
+                  placeholder="Filter tasks..."
+                  className="pl-7 pr-3 py-1.5 bg-white border border-black/[0.08] hover:border-black/[0.14] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] w-36 sm:w-52 transition-colors shadow-2xs font-mono"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1.5 text-[#86868B] hover:text-[#1D1D1F] text-xs"
+                    className="absolute right-2.5 top-1.5 text-[#86868B] hover:text-[#1D1D1F] text-xs cursor-pointer"
                   >
                     ×
                   </button>
@@ -370,11 +414,11 @@ export const ProjectBoard: React.FC = () => {
 
               {/* Sprint Filter */}
               {sprints.length > 0 && (
-                <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+                <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03] flex-shrink-0">
                   <select
                     value={sprintFilter}
                     onChange={(e) => setSprintFilter(e.target.value)}
-                    className="bg-transparent text-xs text-[#1D1D1F] font-medium border-0 focus:ring-0 px-2 py-0.5 cursor-pointer"
+                    className="bg-transparent text-xs text-[#1D1D1F] font-medium border-0 focus:ring-0 px-2 py-0.5 cursor-pointer max-w-[140px] truncate"
                   >
                     <option value="ALL">All Sprints & Backlog</option>
                     <option value="NONE">Unassigned (Backlog Only)</option>
@@ -388,10 +432,10 @@ export const ProjectBoard: React.FC = () => {
               )}
 
               {/* Type Filter Segmented Control */}
-              <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+              <div className="flex items-center bg-black/[0.04] rounded-xl p-0.5 sm:p-1 gap-1 border border-black/[0.03] flex-shrink-0">
                 <button
                   onClick={() => setTypeFilter('ALL')}
-                  className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                  className={`px-2 sm:px-2.5 py-1 text-xs rounded-lg transition-all cursor-pointer ${
                     typeFilter === 'ALL'
                       ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
                       : 'text-[#6E6E73] hover:text-[#1D1D1F]'
@@ -403,7 +447,7 @@ export const ProjectBoard: React.FC = () => {
                   <button
                     key={t.id}
                     onClick={() => setTypeFilter(t.id)}
-                    className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                    className={`px-2 sm:px-2.5 py-1 text-xs rounded-lg transition-all cursor-pointer ${
                       typeFilter === t.id
                         ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
                         : 'text-[#6E6E73] hover:text-[#1D1D1F]'
@@ -415,10 +459,10 @@ export const ProjectBoard: React.FC = () => {
               </div>
 
               {/* Priority Filter */}
-              <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+              <div className="flex items-center bg-black/[0.04] rounded-xl p-0.5 sm:p-1 gap-1 border border-black/[0.03] flex-shrink-0">
                 <button
                   onClick={() => setPriorityFilter('ALL')}
-                  className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                  className={`px-2 sm:px-2.5 py-1 text-xs rounded-lg transition-all cursor-pointer ${
                     priorityFilter === 'ALL'
                       ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
                       : 'text-[#6E6E73] hover:text-[#1D1D1F]'
@@ -430,7 +474,7 @@ export const ProjectBoard: React.FC = () => {
                   <button
                     key={p.id}
                     onClick={() => setPriorityFilter(p.id)}
-                    className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                    className={`px-2 sm:px-2.5 py-1 text-xs rounded-lg transition-all cursor-pointer ${
                       priorityFilter === p.id
                         ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
                         : 'text-[#6E6E73] hover:text-[#1D1D1F]'

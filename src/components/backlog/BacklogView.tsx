@@ -184,11 +184,11 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
           e.dataTransfer.setData('text/plain', task.id);
         }}
         onClick={() => onTaskClick(task)}
-        className="group flex items-center justify-between px-3.5 py-2.5 bg-white hover:bg-[#FAFBFD] border border-black/[0.05] hover:border-[#0071E3]/30 rounded-xl transition-all cursor-pointer shadow-2xs hover:shadow-xs gap-3 select-none"
+        className="group flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:px-3.5 sm:py-2.5 bg-white hover:bg-[#FAFBFD] border border-black/[0.05] hover:border-[#0071E3]/30 rounded-xl transition-all cursor-pointer shadow-2xs hover:shadow-xs gap-2 sm:gap-3 select-none"
       >
         {/* Left: Drag Handle, Key, Type, Title */}
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <div className="text-[#86868B]/40 group-hover:text-[#86868B] cursor-grab active:cursor-grabbing flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+          <div className="text-[#86868B]/40 group-hover:text-[#86868B] cursor-grab active:cursor-grabbing flex-shrink-0 hidden sm:block">
             <GripVertical className="w-3.5 h-3.5" />
           </div>
 
@@ -200,7 +200,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
           />
 
           {/* Task Key */}
-          <span className="font-mono text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 py-0.2 rounded flex-shrink-0">
+          <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 py-0.2 rounded flex-shrink-0">
             {shortId}
           </span>
 
@@ -213,7 +213,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
             {task.title}
           </span>
 
-          {/* Version Tag */}
+          {/* Version Tag (desktop) */}
           {task.version && (
             <span className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-mono font-medium text-[#6E6E73] bg-black/[0.03] border border-black/[0.06] flex-shrink-0">
               <Tag className="w-2.5 h-2.5 text-[#86868B]" />
@@ -222,58 +222,67 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
           )}
         </div>
 
-        {/* Right: Dates, Progress, Priority, Status Badge, Menu */}
-        <div className="flex items-center gap-3 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          {/* Due date status */}
-          <div className="hidden md:block">{renderDueBadge(task)}</div>
-
-          {/* Priority Icon */}
-          <div className="flex items-center gap-1 font-mono text-[10px] text-[#86868B]">
-            {renderPriorityIcon(task.priorityId)}
+        {/* Right / Bottom on mobile: Dates, Priority, Status Badge, Menu */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-black/[0.03]" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2">
+            {task.version && (
+              <span className="sm:hidden inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-mono font-medium text-[#6E6E73] bg-black/[0.03] border border-black/[0.06]">
+                <Tag className="w-2.5 h-2.5 text-[#86868B]" />
+                {task.version}
+              </span>
+            )}
+            <div>{renderDueBadge(task)}</div>
           </div>
 
-          {/* Status Badge */}
-          <Badge
-            label={task.statusId.replace('TASK_STAT_', '')}
-            variant={resolveBadgeVariant(task.statusId)}
-          />
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Priority Icon */}
+            <div className="flex items-center font-mono text-[10px] text-[#86868B]">
+              {renderPriorityIcon(task.priorityId)}
+            </div>
 
-          {/* Action Dropdown Menu */}
-          <DropdownMenu
-            trigger={
-              <button
-                type="button"
-                className="p-1 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-colors"
-                title="Task options"
-              >
-                <MoreVertical className="w-3.5 h-3.5" />
-              </button>
-            }
-            items={[
-              {
-                label: 'View Details',
-                icon: <ArrowRight className="w-3.5 h-3.5" />,
-                onClick: () => onTaskClick(task),
-              },
-              ...targetMoveOptions,
-              'divider',
-              {
-                label: 'Delete Task',
-                icon: <Trash2 className="w-3.5 h-3.5" />,
-                danger: true,
-                onClick: () => onDeleteTask(task.id),
-              },
-            ]}
-          />
+            {/* Status Badge */}
+            <Badge
+              label={task.statusId.replace('TASK_STAT_', '')}
+              variant={resolveBadgeVariant(task.statusId)}
+            />
+
+            {/* Action Dropdown Menu */}
+            <DropdownMenu
+              trigger={
+                <button
+                  type="button"
+                  className="p-1 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-colors cursor-pointer"
+                  title="Task options"
+                >
+                  <MoreVertical className="w-3.5 h-3.5" />
+                </button>
+              }
+              items={[
+                {
+                  label: 'View Details',
+                  icon: <ArrowRight className="w-3.5 h-3.5" />,
+                  onClick: () => onTaskClick(task),
+                },
+                ...targetMoveOptions,
+                'divider',
+                {
+                  label: 'Delete Task',
+                  icon: <Trash2 className="w-3.5 h-3.5" />,
+                  danger: true,
+                  onClick: () => onDeleteTask(task.id),
+                },
+              ]}
+            />
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="space-y-5 pb-8 overflow-y-auto max-h-full pr-1">
+    <div className="space-y-4 sm:space-y-5 pb-8 overflow-y-auto max-h-full pr-1">
       {/* 1. Header Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white border border-black/[0.06] rounded-2xl shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-white border border-black/[0.06] rounded-2xl shadow-2xs">
         <div>
           <h2 className="text-sm font-bold text-[#1D1D1F] flex items-center gap-2">
             <Layers className="w-4 h-4 text-[#0071E3]" />
@@ -284,10 +293,10 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
           <button
             onClick={onOpenCreateSprint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create Sprint / Version</span>
@@ -382,7 +391,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex items-center gap-2 pl-7 md:pl-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 self-end md:self-auto flex-wrap">
                   {sprint.status === 'PLANNED' && (
                     <button
                       onClick={() => onUpdateSprintStatus(sprint.id, 'ACTIVE')}
@@ -415,7 +424,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
                     trigger={
                       <button
                         type="button"
-                        className="p-1.5 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors"
+                        className="p-1.5 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors cursor-pointer"
                       >
                         <MoreVertical className="w-3.5 h-3.5" />
                       </button>
