@@ -21,6 +21,7 @@ import {
   GripVertical,
   ArrowRight,
   Tag,
+  Sparkles,
 } from 'lucide-react';
 
 interface BacklogViewProps {
@@ -31,7 +32,7 @@ interface BacklogViewProps {
   priorities: Lookup[];
   onTaskClick: (task: Task) => void;
   onAddTaskToSprint: (sprintId: string | null) => void;
-  onQuickCreateTask: (title: string, sprintId: string | null) => Promise<boolean>;
+  onQuickCreateTask: (title: string, sprintId: string | null, typeId?: string) => Promise<boolean>;
   onMoveTaskToSprint: (taskId: string, targetSprintId: string | null) => void;
   onOpenCreateSprint: () => void;
   onEditSprint: (sprint: Sprint) => void;
@@ -65,7 +66,64 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
   // Quick inline creation state per section
   const [quickInputSection, setQuickInputSection] = useState<string | null>(null);
   const [quickTitle, setQuickTitle] = useState('');
+  const [selectedTypeId, setSelectedTypeId] = useState<string>('TASK_TYPE_FEATURE');
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
   const [isQuickSubmitting, setIsQuickSubmitting] = useState(false);
+
+  // Jira Issue Type Helper
+  const getIssueTypeMeta = (typeId: string) => {
+    const tid = typeId.toUpperCase();
+    if (tid.includes('BUG')) {
+      return {
+        label: 'Bug',
+        color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100',
+        badgeVariant: 'bug' as const,
+        icon: <Flame className="w-3.5 h-3.5 text-rose-600" />,
+      };
+    }
+    if (tid.includes('RELEASE')) {
+      return {
+        label: 'Release',
+        color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100',
+        badgeVariant: 'release' as const,
+        icon: <Tag className="w-3.5 h-3.5 text-purple-600" />,
+      };
+    }
+    if (tid.includes('TASK')) {
+      return {
+        label: 'Task',
+        color: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100',
+        badgeVariant: 'task' as const,
+        icon: <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />,
+      };
+    }
+    if (tid.includes('RD') || tid.includes('R&D')) {
+      return {
+        label: 'R&D',
+        color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
+        badgeVariant: 'rd' as const,
+        icon: <Layers className="w-3.5 h-3.5 text-indigo-600" />,
+      };
+    }
+    return {
+      label: 'Feature',
+      color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+      badgeVariant: 'feature' as const,
+      icon: <Sparkles className="w-3.5 h-3.5 text-emerald-600" />,
+    };
+  };
+
+  // Standard Jira Issue Types list
+  const issueTypesList =
+    taskTypes && taskTypes.length > 0
+      ? taskTypes
+      : [
+          { id: 'TASK_TYPE_FEATURE', category: 'TASK_TYPE', code: 'FEATURE', label: 'Feature', sortOrder: 10, createdAt: new Date(), updatedAt: new Date(), isActive: true, createdBy: null, updatedBy: null },
+          { id: 'TASK_TYPE_TASK', category: 'TASK_TYPE', code: 'TASK', label: 'Task', sortOrder: 15, createdAt: new Date(), updatedAt: new Date(), isActive: true, createdBy: null, updatedBy: null },
+          { id: 'TASK_TYPE_BUG', category: 'TASK_TYPE', code: 'BUG', label: 'Bug', sortOrder: 20, createdAt: new Date(), updatedAt: new Date(), isActive: true, createdBy: null, updatedBy: null },
+          { id: 'TASK_TYPE_RELEASE', category: 'TASK_TYPE', code: 'RELEASE', label: 'Release', sortOrder: 40, createdAt: new Date(), updatedAt: new Date(), isActive: true, createdBy: null, updatedBy: null },
+          { id: 'TASK_TYPE_RD', category: 'TASK_TYPE', code: 'RD', label: 'R&D', sortOrder: 30, createdAt: new Date(), updatedAt: new Date(), isActive: true, createdBy: null, updatedBy: null },
+        ];
 
   // Drag over tracking
   const [dragOverSection, setDragOverSection] = useState<string | null>(null);
@@ -77,11 +135,12 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
   const handleQuickSubmit = async (sprintId: string | null) => {
     if (!quickTitle.trim()) return;
     setIsQuickSubmitting(true);
-    const success = await onQuickCreateTask(quickTitle.trim(), sprintId);
+    const success = await onQuickCreateTask(quickTitle.trim(), sprintId, selectedTypeId);
     setIsQuickSubmitting(false);
     if (success) {
       setQuickTitle('');
       setQuickInputSection(null);
+      setIsTypeDropdownOpen(false);
     }
   };
 
@@ -280,6 +339,152 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
     );
   };
 
+  // Jira-style Quick Create Work Item Row (Feature, Task, Bug, Release, R&D)
+  const renderQuickCreateRow = (sprintId: string | null, targetName: string) => {
+    const sectionKey = sprintId ?? 'BACKLOG';
+    const isExpanded = quickInputSection === sectionKey;
+    const currentType = getIssueTypeMeta(selectedTypeId);
+
+    if (isExpanded) {
+      return (
+        <div className="relative p-2.5 bg-white border border-[#0071E3]/50 rounded-xl shadow-xs animate-in fade-in space-y-2">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+            {/* Issue Type Selector Dropdown */}
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsTypeDropdownOpen((prev) => !prev)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${currentType.color}`}
+                title="Change issue type"
+              >
+                {currentType.icon}
+                <span>{currentType.label}</span>
+                <ChevronDown className="w-3 h-3 opacity-70 ml-0.5" />
+              </button>
+
+              {isTypeDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsTypeDropdownOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-black/[0.08] p-1.5 z-50 animate-in fade-in zoom-in-95">
+                    <div className="px-2 py-1 text-[10px] font-mono font-bold text-[#86868B] uppercase tracking-wider">
+                      Work Item Type
+                    </div>
+                    {issueTypesList.map((type) => {
+                      const meta = getIssueTypeMeta(type.code || type.label);
+                      const isSelected = selectedTypeId === type.id || selectedTypeId === type.code;
+                      return (
+                        <button
+                          key={type.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTypeId(type.id || type.code);
+                            setIsTypeDropdownOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#0071E3]/10 text-[#0071E3] font-semibold'
+                              : 'text-[#1D1D1F] hover:bg-black/[0.04]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {meta.icon}
+                            <span>{type.label || meta.label}</span>
+                          </div>
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-[#0071E3]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Quick Title Input */}
+            <input
+              type="text"
+              autoFocus
+              value={quickTitle}
+              onChange={(e) => setQuickTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleQuickSubmit(sprintId);
+                if (e.key === 'Escape') {
+                  setQuickInputSection(null);
+                  setIsTypeDropdownOpen(false);
+                }
+              }}
+              placeholder={`What needs to be done? (Create ${currentType.label}) - Press Enter`}
+              className="flex-1 min-w-[140px] bg-transparent text-xs text-[#1D1D1F] placeholder-[#86868B] focus:outline-none"
+            />
+
+            {/* Actions */}
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
+              <button
+                type="button"
+                onClick={() => handleQuickSubmit(sprintId)}
+                disabled={isQuickSubmitting || !quickTitle.trim()}
+                className="px-3 py-1 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {isQuickSubmitting ? 'Adding...' : `Add ${currentType.label}`}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setQuickInputSection(null);
+                  setIsTypeDropdownOpen(false);
+                }}
+                className="px-2 py-1 text-xs text-[#86868B] hover:text-[#1D1D1F] cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-1.5 px-3 rounded-xl border border-dashed border-black/[0.08] hover:border-[#0071E3]/40 hover:bg-white/80 transition-all group">
+        <button
+          type="button"
+          onClick={() => {
+            setQuickTitle('');
+            setQuickInputSection(sectionKey);
+          }}
+          className="flex items-center gap-1.5 text-xs font-medium text-[#6E6E73] group-hover:text-[#0071E3] transition-colors cursor-pointer text-left"
+        >
+          <Plus className="w-3.5 h-3.5 text-[#86868B] group-hover:text-[#0071E3] shrink-0" />
+          <span>Create work item in {targetName}</span>
+        </button>
+
+        {/* Quick Type Selection Pills */}
+        <div className="flex items-center gap-1 opacity-75 group-hover:opacity-100 transition-opacity flex-wrap">
+          {issueTypesList.slice(0, 4).map((type) => {
+            const meta = getIssueTypeMeta(type.code || type.label);
+            return (
+              <button
+                key={type.id}
+                type="button"
+                onClick={() => {
+                  setSelectedTypeId(type.id || type.code);
+                  setQuickTitle('');
+                  setQuickInputSection(sectionKey);
+                }}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-black/[0.05] rounded-md transition-colors cursor-pointer"
+                title={`Quick add ${type.label}`}
+              >
+                {meta.icon}
+                <span>{type.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4 sm:space-y-5 pb-8 overflow-y-auto max-h-full pr-1">
       {/* 1. Header Toolbar */}
@@ -467,47 +672,8 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
                     </div>
                   )}
 
-                  {/* Inline quick task creation */}
-                  {quickInputSection === sprint.id ? (
-                    <div className="flex items-center gap-2 p-2 bg-white border border-[#0071E3]/40 rounded-xl shadow-xs animate-in fade-in">
-                      <input
-                        type="text"
-                        autoFocus
-                        value={quickTitle}
-                        onChange={(e) => setQuickTitle(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleQuickSubmit(sprint.id);
-                          if (e.key === 'Escape') setQuickInputSection(null);
-                        }}
-                        placeholder={`What needs to be done in ${sprint.name}? (Press Enter to add)`}
-                        className="flex-1 bg-transparent text-xs text-[#1D1D1F] placeholder-[#86868B] focus:outline-none"
-                      />
-                      <button
-                        onClick={() => handleQuickSubmit(sprint.id)}
-                        disabled={isQuickSubmitting || !quickTitle.trim()}
-                        className="px-3 py-1 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
-                      >
-                        Add
-                      </button>
-                      <button
-                        onClick={() => setQuickInputSection(null)}
-                        className="px-2 py-1 text-xs text-[#86868B] hover:text-[#1D1D1F]"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setQuickTitle('');
-                        setQuickInputSection(sprint.id);
-                      }}
-                      className="w-full py-2 px-3 text-left text-xs font-medium text-[#6E6E73] hover:text-[#0071E3] hover:bg-white/80 rounded-xl border border-dashed border-black/[0.08] transition-all flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Create issue in {sprint.name}</span>
-                    </button>
-                  )}
+                  {/* Jira-style Inline Quick Task Creation */}
+                  {renderQuickCreateRow(sprint.id, sprint.name)}
                 </div>
               )}
             </div>
@@ -577,47 +743,8 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
               </div>
             )}
 
-            {/* Inline quick task creation for Backlog */}
-            {quickInputSection === 'BACKLOG' ? (
-              <div className="flex items-center gap-2 p-2 bg-white border border-[#0071E3]/40 rounded-xl shadow-xs animate-in fade-in">
-                <input
-                  type="text"
-                  autoFocus
-                  value={quickTitle}
-                  onChange={(e) => setQuickTitle(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleQuickSubmit(null);
-                    if (e.key === 'Escape') setQuickInputSection(null);
-                  }}
-                  placeholder="What needs to be added to the backlog? (Press Enter to add)"
-                  className="flex-1 bg-transparent text-xs text-[#1D1D1F] placeholder-[#86868B] focus:outline-none"
-                />
-                <button
-                  onClick={() => handleQuickSubmit(null)}
-                  disabled={isQuickSubmitting || !quickTitle.trim()}
-                  className="px-3 py-1 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  Add
-                </button>
-                <button
-                  onClick={() => setQuickInputSection(null)}
-                  className="px-2 py-1 text-xs text-[#86868B] hover:text-[#1D1D1F]"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setQuickTitle('');
-                  setQuickInputSection('BACKLOG');
-                }}
-                className="w-full py-2 px-3 text-left text-xs font-medium text-[#6E6E73] hover:text-[#0071E3] hover:bg-white/80 rounded-xl border border-dashed border-black/[0.08] transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Create issue in Backlog</span>
-              </button>
-            )}
+            {/* Jira-style Inline Quick Task Creation for Backlog */}
+            {renderQuickCreateRow(null, 'Backlog')}
           </div>
         )}
       </div>

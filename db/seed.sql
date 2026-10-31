@@ -28,5 +28,7 @@ INSERT INTO lookups (id, category, code, label, sort_order, created_by, _updated
 -- TASK TYPES
 -- ==========================================
 ('TASK_TYPE_FEATURE',     'TASK_TYPE',      'FEATURE',     'Feature',     10, 'SYSTEM', 'SYSTEM', 1),
+('TASK_TYPE_TASK',        'TASK_TYPE',      'TASK',        'Task',        15, 'SYSTEM', 'SYSTEM', 1),
 ('TASK_TYPE_BUG',         'TASK_TYPE',      'BUG',         'Bug',         20, 'SYSTEM', 'SYSTEM', 1),
-('TASK_TYPE_RD',          'TASK_TYPE',      'RD',          'R&D',         30, 'SYSTEM', 'SYSTEM', 1);
+('TASK_TYPE_RD',          'TASK_TYPE',      'RD',          'R&D',         30, 'SYSTEM', 'SYSTEM', 1),
+('TASK_TYPE_RELEASE',     'TASK_TYPE',      'RELEASE',     'Release',     40, 'SYSTEM', 'SYSTEM', 1);

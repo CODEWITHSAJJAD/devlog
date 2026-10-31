@@ -4,6 +4,8 @@ export type BadgeVariant =
   | 'critical'
   | 'feature'
   | 'bug'
+  | 'task'
+  | 'release'
   | 'rd'
   | 'low'
   | 'medium'
@@ -36,9 +38,17 @@ const variantStyles: Record<BadgeVariant, { bg: string; dot: string }> = {
     bg: 'bg-rose-50 text-rose-700 border-rose-200',
     dot: 'bg-rose-500',
   },
-  rd: {
+  task: {
+    bg: 'bg-sky-50 text-sky-700 border-sky-200',
+    dot: 'bg-sky-500',
+  },
+  release: {
     bg: 'bg-purple-50 text-purple-700 border-purple-200',
     dot: 'bg-purple-500',
+  },
+  rd: {
+    bg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    dot: 'bg-indigo-500',
   },
   low: {
     bg: 'bg-slate-100 text-slate-600 border-slate-200',
@@ -86,6 +96,8 @@ export const resolveBadgeVariant = (code: string): BadgeVariant => {
   if (c.includes('TODO') || c.includes('TO_DO')) return 'todo';
   if (c.includes('FEATURE')) return 'feature';
   if (c.includes('BUG')) return 'bug';
+  if (c.includes('RELEASE')) return 'release';
+  if (c.includes('TASK')) return 'task';
   if (c.includes('RD') || c.includes('R&D')) return 'rd';
   if (c.includes('COMPLETED') || c.includes('DONE')) return 'success';
   if (c.includes('HIGH')) return 'high';

@@ -536,11 +536,11 @@ export const ProjectBoard: React.FC = () => {
             priorities={priorities}
             onTaskClick={(task) => setSelectedTaskForDetails(task)}
             onAddTaskToSprint={(sprintId) => handleOpenCreateTask('TASK_STAT_BACKLOG', sprintId)}
-            onQuickCreateTask={async (title, sprintId) => {
+            onQuickCreateTask={async (title, sprintId, typeId) => {
               const res = await createTask({
                 title,
                 sprintId,
-                typeId: 'TASK_TYPE_FEATURE',
+                typeId: typeId || 'TASK_TYPE_FEATURE',
                 statusId: 'TASK_STAT_BACKLOG',
                 priorityId: 'PRIO_MEDIUM',
               });
