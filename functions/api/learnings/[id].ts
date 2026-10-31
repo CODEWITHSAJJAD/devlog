@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
-import { learnings } from '../../../db/schema';
+import { learnings, tasks } from '../../../db/schema';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, 'id', EventContextData> = async (context) => {
@@ -17,8 +17,22 @@ export const onRequestGet: PagesFunction<Env, 'id', EventContextData> = async (c
   try {
     const db = getDb(env.DB);
     const learning = await db
-      .select()
+      .select({
+        id: learnings.id,
+        taskId: learnings.taskId,
+        userId: learnings.userId,
+        title: learnings.title,
+        content: learnings.content,
+        tags: learnings.tags,
+        createdAt: learnings.createdAt,
+        createdBy: learnings.createdBy,
+        updatedAt: learnings.updatedAt,
+        isActive: learnings.isActive,
+        taskKey: tasks.taskKey,
+        taskTitle: tasks.title,
+      })
       .from(learnings)
+      .leftJoin(tasks, eq(learnings.taskId, tasks.id))
       .where(and(eq(learnings.id, learningId), eq(learnings.userId, data.userId), eq(learnings.isActive, true)))
       .get();
 

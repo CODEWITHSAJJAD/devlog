@@ -2,6 +2,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
 import { normalizeToDate } from '../../utils/date';
 import { projects, tasks } from '../../../db/schema';
+import { getProjectCode } from '../../../shared/projectCode';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, any, EventContextData> = async (context) => {
@@ -104,10 +105,12 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
 
     const db = getDb(env.DB);
     const projectId = crypto.randomUUID();
+    const code = getProjectCode(body.title.trim());
     const newProject = {
       id: projectId,
       userId: data.userId,
       title: body.title.trim(),
+      code,
       description: body.description?.trim() || null,
       statusId: body.statusId || 'PROJ_STAT_NOT_STARTED',
       priorityId: body.priorityId || 'PRIO_MEDIUM',

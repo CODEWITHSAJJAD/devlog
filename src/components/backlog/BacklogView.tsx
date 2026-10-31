@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Task, Sprint, Lookup } from '../../../shared/types';
+import { formatTaskKey } from '../../utils/projectCode';
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { formatDate, parseToDate } from '../../utils/api';
 import { DropdownMenu } from '../shared/DropdownMenu';
@@ -156,7 +157,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
 
   // Reusable Task Row Component
   const renderTaskRow = (task: Task) => {
-    const shortId = `TSK-${task.id.slice(0, 4).toUpperCase()}`;
+    const shortId = formatTaskKey(task.taskKey, undefined, task.taskNumber, task.id);
     const isDone = task.statusId === 'TASK_STAT_DONE';
 
     // Available target sprints to move to

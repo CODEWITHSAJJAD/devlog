@@ -2,6 +2,7 @@ import { eq, and } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
 import { normalizeToDate } from '../../utils/date';
 import { projects, tasks } from '../../../db/schema';
+import { getProjectCode } from '../../../shared/projectCode';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, 'id', EventContextData> = async (context) => {
@@ -121,7 +122,10 @@ export const onRequestPut: PagesFunction<Env, 'id', EventContextData> = async (c
       updatedAt: new Date(),
     };
 
-    if (body.title !== undefined) updates.title = body.title.trim();
+    if (body.title !== undefined) {
+      updates.title = body.title.trim();
+      updates.code = getProjectCode(body.title.trim());
+    }
     if (body.description !== undefined) updates.description = body.description?.trim() || null;
     if (body.statusId !== undefined) {
       updates.statusId = body.statusId;

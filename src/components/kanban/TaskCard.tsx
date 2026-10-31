@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Task } from '../../../shared/types';
+import { formatTaskKey } from '../../utils/projectCode';
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { formatDate, parseToDate } from '../../utils/api';
 import { getTaskProgress } from '../../utils/progress';
@@ -28,7 +29,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onRecordLearning,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const shortId = `TSK-${task.id.slice(0, 4).toUpperCase()}`;
+  const shortId = formatTaskKey(task.taskKey, undefined, task.taskNumber, task.id);
   const isDone = task.statusId === 'TASK_STAT_DONE';
   const progress = getTaskProgress(task.statusId);
 

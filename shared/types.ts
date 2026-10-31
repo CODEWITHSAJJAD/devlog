@@ -21,7 +21,10 @@ export type NewSprint = InferInsertModel<typeof sprints>;
 export type Task = InferSelectModel<typeof tasks>;
 export type NewTask = InferInsertModel<typeof tasks>;
 
-export type Learning = InferSelectModel<typeof learnings>;
+export type Learning = InferSelectModel<typeof learnings> & {
+  taskKey?: string | null;
+  taskTitle?: string | null;
+};
 export type NewLearning = InferInsertModel<typeof learnings>;
 
 export interface AuthSession {

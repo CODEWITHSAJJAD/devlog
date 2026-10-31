@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Task, Lookup, Sprint } from '../../../shared/types';
+import { formatTaskKey } from '../../utils/projectCode';
 import { Modal } from '../shared/Modal';
 import { MarkdownViewer } from '../shared/MarkdownViewer';
 import { DeleteConfirmModal } from '../shared/DeleteConfirmModal';
@@ -166,8 +167,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         onClose={onClose}
         title={isEditing ? 'Task Details' : 'Create New Task'}
         subtitle={
-          isEditing
-            ? `Tracking parameters for TSK-${task.id.slice(0, 4).toUpperCase()}`
+          isEditing && task
+            ? `Tracking parameters for ${formatTaskKey(task.taskKey, undefined, task.taskNumber, task.id)}`
             : 'Add a new ticket to your Kanban board'
         }
         maxWidth="max-w-xl"

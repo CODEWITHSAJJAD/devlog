@@ -29,6 +29,7 @@ import { useLookups } from '../hooks/useLookups';
 import { useLearnings } from '../hooks/useLearnings';
 import { apiFetch } from '../utils/api';
 import { calculateProjectProgress } from '../utils/progress';
+import { getProjectCode } from '../utils/projectCode';
 import type { Task, Lookup, Project, Sprint } from '../../shared/types';
 
 export const ProjectBoard: React.FC = () => {
@@ -204,7 +205,7 @@ export const ProjectBoard: React.FC = () => {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 sm:px-2 py-0.5 rounded-lg shadow-2xs">
-                  PRJ-{projectId?.slice(0, 4).toUpperCase()}
+                  {project?.code || getProjectCode(project?.title)}
                 </span>
                 <h1 className="text-sm sm:text-base font-bold text-[#1D1D1F] tracking-tight truncate max-w-[130px] sm:max-w-xs">
                   {project?.title || 'Board'}

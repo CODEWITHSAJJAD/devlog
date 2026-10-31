@@ -2,6 +2,7 @@ import { eq, and, asc, sql } from 'drizzle-orm';
 import { getDb } from '../../utils/db';
 import { normalizeToDate } from '../../utils/date';
 import { tasks, projects } from '../../../db/schema';
+import { getProjectCode } from '../../../shared/projectCode';
 import type { Env, EventContextData } from '../../env';
 
 export const onRequestGet: PagesFunction<Env, any, EventContextData> = async (context) => {
@@ -91,7 +92,7 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
 
     // Verify project belongs to user and is active
     const project = await db
-      .select({ id: projects.id })
+      .select({ id: projects.id, title: projects.title, code: projects.code })
       .from(projects)
       .where(and(eq(projects.id, body.projectId), eq(projects.userId, data.userId), eq(projects.isActive, true)))
       .get();
@@ -102,6 +103,17 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    const projectCode = project.code || getProjectCode(project.title);
+
+    // Auto-calculate next task_number for this project
+    const maxNumResult = await db
+      .select({ max: sql<number>`COALESCE(MAX(${tasks.taskNumber}), 0)` })
+      .from(tasks)
+      .where(eq(tasks.projectId, body.projectId))
+      .get();
+    const taskNumber = (Number(maxNumResult?.max) || 0) + 1;
+    const taskKey = `${projectCode}-${taskNumber}`;
 
     const statusId = body.statusId || 'TASK_STAT_BACKLOG';
     const priorityId = body.priorityId || 'PRIO_MEDIUM';
@@ -131,6 +143,8 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
       userId: data.userId,
       sprintId: body.sprintId || null,
       version: body.version?.trim() || null,
+      taskNumber,
+      taskKey,
       title: body.title.trim(),
       description: body.description?.trim() || null,
       typeId,

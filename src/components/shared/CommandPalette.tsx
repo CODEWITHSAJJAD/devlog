@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { Project, Learning, Task } from '../../../shared/types';
+import { formatTaskKey } from '../../utils/projectCode';
 import { apiFetch } from '../../utils/api';
 
 interface CommandPaletteProps {
@@ -209,7 +210,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="font-mono text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">
-                        TSK-{task.id.slice(0, 4).toUpperCase()}
+                        {formatTaskKey(task.taskKey, undefined, task.taskNumber, task.id)}
                       </span>
                       <span className="font-medium truncate max-w-sm">{task.title}</span>
                     </div>

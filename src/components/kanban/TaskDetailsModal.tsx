@@ -5,6 +5,7 @@ import { MarkdownViewer } from '../shared/MarkdownViewer';
 import { formatDate } from '../../utils/api';
 import { getTaskProgress } from '../../utils/progress';
 import { useLearnings } from '../../hooks/useLearnings';
+import { formatTaskKey } from '../../utils/projectCode';
 import type { Task, Sprint } from '../../../shared/types';
 import {
   Calendar,
@@ -44,7 +45,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   if (!task) return null;
 
-  const shortId = `TSK-${task.id.slice(0, 4).toUpperCase()}`;
+  const shortId = formatTaskKey(task.taskKey, undefined, task.taskNumber, task.id);
   const isDone = task.statusId === 'TASK_STAT_DONE';
   const progress = getTaskProgress(task.statusId);
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { MarkdownViewer } from './MarkdownViewer';
 import { formatDate, apiFetch } from '../../utils/api';
+import { formatTaskKey } from '../../utils/projectCode';
 import type { Learning, Task } from '../../../shared/types';
 import {
   Edit2,
@@ -160,7 +161,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         title={learning.title}
-        subtitle={`Recorded on ${formatDate(learning.createdAt)} • Task: TSK-${learning.taskId.slice(0, 4).toUpperCase()}`}
+        subtitle={`Recorded on ${formatDate(learning.createdAt)} • Task: ${learning.taskKey || formatTaskKey(undefined, undefined, undefined, learning.taskId)}`}
         maxWidth="max-w-2xl"
       >
         <div className="space-y-5">
@@ -259,7 +260,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
       subtitle={
         mode === 'create'
           ? 'Document architectural findings, bug fixes, or post-mortem notes'
-          : `Updating note for TSK-${taskId.slice(0, 4).toUpperCase()}`
+          : `Updating note for ${formatTaskKey(undefined, undefined, undefined, taskId)}`
       }
       maxWidth="max-w-2xl"
     >
@@ -292,7 +293,7 @@ export const LearningModal: React.FC<LearningModalProps> = ({
               >
                 {availableTasks.map((t) => (
                   <option key={t.id} value={t.id}>
-                    TSK-{t.id.slice(0, 4).toUpperCase()}: {t.title}
+                    {formatTaskKey(t.taskKey, undefined, t.taskNumber, t.id)}: {t.title}
                   </option>
                 ))}
               </select>

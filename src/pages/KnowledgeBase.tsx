@@ -19,6 +19,7 @@ import { LearningModal } from '../components/shared/LearningModal';
 import { DeleteConfirmModal } from '../components/shared/DeleteConfirmModal';
 import { DropdownMenu } from '../components/shared/DropdownMenu';
 import { formatDate } from '../utils/api';
+import { formatTaskKey } from '../utils/projectCode';
 import type { Learning } from '../../shared/types';
 
 export const KnowledgeBase: React.FC = () => {
@@ -263,7 +264,7 @@ export const KnowledgeBase: React.FC = () => {
                       {item.title}
                     </h3>
                     <span className="font-mono text-[10px] text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 py-0.2 rounded font-bold flex-shrink-0">
-                      TSK-{item.taskId.slice(0, 4).toUpperCase()}
+                      {item.taskKey || formatTaskKey(undefined, undefined, undefined, item.taskId)}
                     </span>
                   </div>
 
@@ -300,7 +301,7 @@ export const KnowledgeBase: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="font-mono text-[10px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-md">
-                        TSK-{currentSelectedNote.taskId.slice(0, 4).toUpperCase()}
+                        {currentSelectedNote.taskKey || formatTaskKey(undefined, undefined, undefined, currentSelectedNote.taskId)}
                       </span>
                       <span className="text-[#86868B] text-xs font-mono">
                         {formatDate(currentSelectedNote.createdAt)}
@@ -405,7 +406,7 @@ export const KnowledgeBase: React.FC = () => {
                     </h3>
                     <div className="flex items-center gap-1.5 mt-1.5 text-[11px] font-mono text-[#86868B]">
                       <span className="text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-1.5 py-0.2 rounded text-[10px] font-bold">
-                        TSK-{item.taskId.slice(0, 4).toUpperCase()}
+                        {item.taskKey || formatTaskKey(undefined, undefined, undefined, item.taskId)}
                       </span>
                       <span>•</span>
                       <span>{formatDate(item.createdAt)}</span>

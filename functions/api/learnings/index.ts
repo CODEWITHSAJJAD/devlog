@@ -42,8 +42,22 @@ export const onRequestGet: PagesFunction<Env, any, EventContextData> = async (co
     }
 
     const items = await db
-      .select()
+      .select({
+        id: learnings.id,
+        taskId: learnings.taskId,
+        userId: learnings.userId,
+        title: learnings.title,
+        content: learnings.content,
+        tags: learnings.tags,
+        createdAt: learnings.createdAt,
+        createdBy: learnings.createdBy,
+        updatedAt: learnings.updatedAt,
+        isActive: learnings.isActive,
+        taskKey: tasks.taskKey,
+        taskTitle: tasks.title,
+      })
       .from(learnings)
+      .leftJoin(tasks, eq(learnings.taskId, tasks.id))
       .where(and(...conditions))
       .orderBy(desc(learnings.createdAt))
       .all();
