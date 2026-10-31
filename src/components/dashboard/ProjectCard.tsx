@@ -13,6 +13,7 @@ import {
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { DropdownMenu } from '../shared/DropdownMenu';
 import { formatDate } from '../../utils/api';
+import { getProjectCode } from '../../utils/projectCode';
 import type { Project } from '../../../shared/types';
 
 interface ProjectCardProps {
@@ -50,7 +51,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Top Header: ID Key, Status & More Menu */}
         <div className="flex items-center justify-between mb-3.5">
           <span className="font-mono text-[11px] font-bold text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-lg shadow-2xs">
-            PRJ-{project.id.slice(0, 4).toUpperCase()}
+            {project.code || getProjectCode(project.title)}
           </span>
 
           <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>

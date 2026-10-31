@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { useLookups } from '../../hooks/useLookups';
-import { Loader2, Calendar } from 'lucide-react';
+import { getProjectCode } from '../../utils/projectCode';
+import { Loader2, Calendar, Tag } from 'lucide-react';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -73,15 +74,23 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-[#1D1D1F] mb-1.5">
-            Project Title *
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold text-[#1D1D1F]">
+              Project Title *
+            </label>
+            {title.trim().length > 0 && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono text-[#0071E3] bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-md font-bold">
+                <Tag className="w-2.5 h-2.5" />
+                Key: {getProjectCode(title)} (e.g. {getProjectCode(title)}-1)
+              </span>
+            )}
+          </div>
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Core Cloud Architecture Upgrade"
+            placeholder="e.g. Cloudflare Edge Engine"
             className="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-black/[0.08] hover:border-black/[0.14] focus:bg-white focus:border-[#0071E3] focus:ring-2 focus:ring-[#0071E3]/20 rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] transition-all"
           />
         </div>

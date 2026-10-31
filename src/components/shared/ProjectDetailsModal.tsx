@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from './Modal';
 import { Badge, resolveBadgeVariant } from './Badge';
 import { formatDate } from '../../utils/api';
+import { getProjectCode } from '../../utils/projectCode';
 import type { Project } from '../../../shared/types';
 import { Calendar, CheckCircle2, Clock, Edit2, Trash2, ArrowRight, FolderKanban } from 'lucide-react';
 
@@ -32,7 +33,7 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={project.title}
-      subtitle={`Project Identifier: PRJ-${project.id.slice(0, 4).toUpperCase()}`}
+      subtitle={`Project Code: ${project.code || getProjectCode(project.title)}`}
       maxWidth="max-w-xl"
     >
       <div className="space-y-6">

@@ -12,6 +12,7 @@ import {
 import { Badge, resolveBadgeVariant } from '../shared/Badge';
 import { DropdownMenu } from '../shared/DropdownMenu';
 import { formatDate } from '../../utils/api';
+import { getProjectCode } from '../../utils/projectCode';
 import type { Project } from '../../../shared/types';
 
 interface ProjectTableViewProps {
@@ -60,7 +61,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                   {/* Key */}
                   <td className="py-3 px-4 whitespace-nowrap">
                     <span className="font-mono text-[11px] text-[#0071E3] font-bold bg-[#E8F2FE] border border-[#0071E3]/20 px-2 py-0.5 rounded-md">
-                      PRJ-{project.id.slice(0, 4).toUpperCase()}
+                      {project.code || getProjectCode(project.title)}
                     </span>
                   </td>
 

@@ -8,11 +8,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
   try {
-    const body = (await request.json()) as { name?: string; email?: string; password?: string };
-    const { name, email, password } = body;
+    const body = (await request.json()) as {
+      name?: string;
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
+    };
+    const { name, email, password, confirmPassword } = body;
 
     if (!name || !email || !password) {
       return new Response(JSON.stringify({ success: false, error: 'Name, email, and password are required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (confirmPassword !== undefined && confirmPassword !== password) {
+      return new Response(JSON.stringify({ success: false, error: 'Passwords do not match' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });

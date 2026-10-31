@@ -35,12 +35,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette, onNewProje
           </Link>
 
           {/* Apple Segmented Navigation Tabs */}
-          <nav className="hidden sm:flex items-center p-1 bg-black/[0.04] rounded-xl ml-2 gap-1 border border-black/[0.03]">
+          <nav className="flex items-center p-0.5 sm:p-1 bg-black/[0.04] rounded-xl ml-1 sm:ml-2 gap-0.5 sm:gap-1 border border-black/[0.03]">
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+                `flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all ${
                   isActive
                     ? 'bg-white text-[#1D1D1F] font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_1px_rgba(0,0,0,0.04)]'
                     : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-white/50 font-medium'
@@ -54,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette, onNewProje
             <NavLink
               to="/knowledge-base"
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+                `flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all ${
                   isActive
                     ? 'bg-white text-[#1D1D1F] font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_1px_rgba(0,0,0,0.04)]'
                     : 'text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-white/50 font-medium'
@@ -62,7 +62,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCommandPalette, onNewProje
               }
             >
               <BookOpen className="w-3.5 h-3.5 text-[#34C759]" />
-              <span>Knowledge Base</span>
+              <span className="hidden sm:inline">Knowledge Base</span>
+              <span className="sm:hidden">Notes</span>
             </NavLink>
           </nav>
         </div>

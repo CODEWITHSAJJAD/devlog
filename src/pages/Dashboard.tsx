@@ -21,6 +21,7 @@ import { ProjectDetailsModal } from '../components/shared/ProjectDetailsModal';
 import { DeleteConfirmModal } from '../components/shared/DeleteConfirmModal';
 import { ProjectCard } from '../components/dashboard/ProjectCard';
 import { ProjectTableView } from '../components/dashboard/ProjectTableView';
+import { getProjectCode } from '../utils/projectCode';
 import type { Project } from '../../shared/types';
 
 export const Dashboard: React.FC = () => {
@@ -63,7 +64,9 @@ export const Dashboard: React.FC = () => {
       const matchesTitle = p.title.toLowerCase().includes(q);
       const matchesDesc = p.description?.toLowerCase().includes(q);
       const matchesKey = `prj-${p.id.slice(0, 4).toLowerCase()}`.includes(q);
-      if (!matchesTitle && !matchesDesc && !matchesKey) return false;
+      const projectCode = (p.code || getProjectCode(p.title)).toLowerCase();
+      const matchesCode = projectCode.includes(q);
+      if (!matchesTitle && !matchesDesc && !matchesKey && !matchesCode) return false;
     }
 
     return true;
