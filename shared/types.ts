@@ -1,5 +1,5 @@
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
-import type { lookups, users, projects, tasks, learnings } from '../db/schema';
+import type { lookups, users, projects, sprints, tasks, learnings } from '../db/schema';
 
 export type Lookup = InferSelectModel<typeof lookups>;
 export type NewLookup = InferInsertModel<typeof lookups>;
@@ -14,6 +14,9 @@ export type Project = InferSelectModel<typeof projects> & {
   progress?: number;
 };
 export type NewProject = InferInsertModel<typeof projects>;
+
+export type Sprint = InferSelectModel<typeof sprints>;
+export type NewSprint = InferInsertModel<typeof sprints>;
 
 export type Task = InferSelectModel<typeof tasks>;
 export type NewTask = InferInsertModel<typeof tasks>;

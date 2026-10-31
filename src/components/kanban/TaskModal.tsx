@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import type { Task, Lookup } from '../../../shared/types';
+import type { Task, Lookup, Sprint } from '../../../shared/types';
 import { Modal } from '../shared/Modal';
 import { MarkdownViewer } from '../shared/MarkdownViewer';
 import { DeleteConfirmModal } from '../shared/DeleteConfirmModal';
 import { useLearnings } from '../../hooks/useLearnings';
 import { toDateInputValue } from '../../utils/api';
-import { Sparkles, Trash2, BookOpen, Plus, Loader2, Calendar } from 'lucide-react';
+import { Sparkles, Trash2, BookOpen, Plus, Loader2, Calendar, Layers } from 'lucide-react';
 
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   task?: Task | null;
   defaultStatusId?: string;
+  defaultSprintId?: string | null;
+  sprints?: Sprint[];
   taskTypes: Lookup[];
   taskStatuses: Lookup[];
   priorities: Lookup[];
@@ -21,6 +23,8 @@ interface TaskModalProps {
     typeId: string;
     statusId?: string;
     priorityId?: string;
+    sprintId?: string | null;
+    version?: string | null;
     dueDate?: number;
   }) => Promise<{ success: boolean; error?: string }>;
   onDeleteTask?: (taskId: string) => Promise<{ success: boolean; error?: string }>;
@@ -31,6 +35,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onClose,
   task,
   defaultStatusId = 'TASK_STAT_BACKLOG',
+  defaultSprintId = null,
+  sprints = [],
   taskTypes,
   taskStatuses,
   priorities,
@@ -45,6 +51,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [typeId, setTypeId] = useState('TASK_TYPE_FEATURE');
   const [statusId, setStatusId] = useState(defaultStatusId);
   const [priorityId, setPriorityId] = useState('PRIO_MEDIUM');
+  const [sprintId, setSprintId] = useState<string | null>(defaultSprintId);
+  const [version, setVersion] = useState('');
   const [dueDateStr, setDueDateStr] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +82,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setTypeId(task.typeId || 'TASK_TYPE_FEATURE');
       setStatusId(task.statusId || defaultStatusId);
       setPriorityId(task.priorityId || 'PRIO_MEDIUM');
+      setSprintId(task.sprintId || null);
+      setVersion(task.version || '');
       setDueDateStr(toDateInputValue(task.dueDate));
     } else {
       setTitle('');
@@ -81,11 +91,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setTypeId('TASK_TYPE_FEATURE');
       setStatusId(defaultStatusId);
       setPriorityId('PRIO_MEDIUM');
+      setSprintId(defaultSprintId);
+      const activeSprint = sprints.find((s) => s.id === defaultSprintId);
+      setVersion(activeSprint?.version || '');
       setDueDateStr('');
     }
     setError(null);
     setIsAddingLearning(false);
-  }, [task, defaultStatusId, isOpen]);
+  }, [task, defaultStatusId, defaultSprintId, isOpen, sprints]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +115,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       typeId,
       statusId,
       priorityId,
+      sprintId,
+      version: version.trim() || undefined,
       dueDate,
     });
 
@@ -224,6 +239,46 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-[#1D1D1F] mb-1.5 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-[#0071E3]" /> Sprint / Iteration
+                </label>
+                <select
+                  value={sprintId || ''}
+                  onChange={(e) => {
+                    const sid = e.target.value || null;
+                    setSprintId(sid);
+                    const selected = sprints.find((s) => s.id === sid);
+                    if (selected?.version && !version) {
+                      setVersion(selected.version);
+                    }
+                  }}
+                  className="w-full px-3 py-2 bg-[#F5F5F7] border border-black/[0.08] hover:border-black/[0.14] focus:bg-white focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] transition-all"
+                >
+                  <option value="">Product Backlog (No Sprint)</option>
+                  {sprints.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} {s.version ? `(${s.version})` : ''} [{s.status}]
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#1D1D1F] mb-1.5">
+                  Release Version (e.g. v1.0.0)
+                </label>
+                <input
+                  type="text"
+                  value={version}
+                  onChange={(e) => setVersion(e.target.value)}
+                  placeholder="e.g. v1.0.0"
+                  className="w-full px-3.5 py-2 bg-[#F5F5F7] border border-black/[0.08] hover:border-black/[0.14] focus:bg-white focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] transition-all font-mono"
+                />
               </div>
             </div>
 

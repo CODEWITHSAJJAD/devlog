@@ -125,16 +125,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       </div>
 
       {/* Task Title */}
-      <h4 className="text-xs font-semibold text-[#1D1D1F] line-clamp-2 leading-relaxed mb-1.5 group-hover:text-[#0071E3] transition-colors">
-        {task.title}
-      </h4>
-
-      {/* Description Snippet */}
-      {task.description && (
-        <p className="text-[11px] text-[#6E6E73] line-clamp-2 leading-relaxed mb-2.5">
-          {task.description}
-        </p>
-      )}
+      <div className="flex items-start justify-between gap-1.5 mb-2">
+        <h4 className="text-xs font-semibold text-[#1D1D1F] line-clamp-2 leading-snug group-hover:text-[#0071E3] transition-colors break-words overflow-hidden flex-1">
+          {task.title}
+        </h4>
+        {task.version && (
+          <span className="font-mono text-[9px] font-medium text-[#6E6E73] bg-black/[0.04] border border-black/[0.06] px-1.5 py-0.5 rounded flex-shrink-0">
+            {task.version}
+          </span>
+        )}
+      </div>
 
       {/* Task Linear Progress Bar */}
       <div className="mb-2.5">

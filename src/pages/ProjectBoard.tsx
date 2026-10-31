@@ -9,9 +9,14 @@ import {
   Trash2,
   Search,
   Flame,
+  LayoutGrid,
+  Layers,
 } from 'lucide-react';
 import { Board } from '../components/kanban/Board';
 import { TaskModal } from '../components/kanban/TaskModal';
+import { TaskDetailsModal } from '../components/kanban/TaskDetailsModal';
+import { BacklogView } from '../components/backlog/BacklogView';
+import { SprintModal } from '../components/backlog/SprintModal';
 import { LearningModal } from '../components/shared/LearningModal';
 import { EditProjectModal } from '../components/shared/EditProjectModal';
 import { ProjectDetailsModal } from '../components/shared/ProjectDetailsModal';
@@ -19,15 +24,19 @@ import { DeleteConfirmModal } from '../components/shared/DeleteConfirmModal';
 import { DropdownMenu } from '../components/shared/DropdownMenu';
 import { Badge, resolveBadgeVariant } from '../components/shared/Badge';
 import { useFetchTasks } from '../hooks/useFetchTasks';
+import { useFetchSprints } from '../hooks/useFetchSprints';
 import { useLookups } from '../hooks/useLookups';
 import { useLearnings } from '../hooks/useLearnings';
 import { apiFetch } from '../utils/api';
 import { calculateProjectProgress } from '../utils/progress';
-import type { Task, Lookup, Project } from '../../shared/types';
+import type { Task, Lookup, Project, Sprint } from '../../shared/types';
 
 export const ProjectBoard: React.FC = () => {
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // Tab state: 'board' | 'backlog'
+  const [viewTab, setViewTab] = useState<'board' | 'backlog'>('board');
 
   // Project state
   const [project, setProject] = useState<Project | null>(null);
@@ -41,6 +50,19 @@ export const ProjectBoard: React.FC = () => {
   const { tasks, isLoading, error, refetch, createTask, updateTask, moveTask, deleteTask } =
     useFetchTasks(projectId);
 
+  // Sprints hook
+  const {
+    sprints,
+    createSprint,
+    updateSprint,
+    deleteSprint,
+  } = useFetchSprints(projectId);
+
+  // Sprint modal state
+  const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
+  const [sprintModalMode, setSprintModalMode] = useState<'create' | 'edit'>('create');
+  const [editingSprint, setEditingSprint] = useState<Sprint | null>(null);
+
   // Learnings hook for task-linked learnings
   const { createLearning } = useLearnings();
   const [learningModalTask, setLearningModalTask] = useState<Task | null>(null);
@@ -49,15 +71,20 @@ export const ProjectBoard: React.FC = () => {
   const { lookups: taskTypes } = useLookups('TASK_TYPE');
   const { lookups: priorities } = useLookups('PRIORITY');
 
-  // Task modal state
+  // Task details modal state (opens on click)
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<Task | null>(null);
+
+  // Task edit / create modal state
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [targetColumnId, setTargetColumnId] = useState<string>('TASK_STAT_BACKLOG');
+  const [defaultSprintId, setDefaultSprintId] = useState<string | null>(null);
 
   // Filtering state
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
   const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
+  const [sprintFilter, setSprintFilter] = useState<string>('ALL');
 
   const fetchProjectDetails = useCallback(async () => {
     if (!projectId) return;
@@ -83,19 +110,25 @@ export const ProjectBoard: React.FC = () => {
   const filteredTasks = tasks.filter((t) => {
     if (typeFilter !== 'ALL' && t.typeId !== typeFilter) return false;
     if (priorityFilter !== 'ALL' && t.priorityId !== priorityFilter) return false;
+    if (sprintFilter !== 'ALL') {
+      if (sprintFilter === 'NONE' && t.sprintId) return false;
+      if (sprintFilter !== 'NONE' && t.sprintId !== sprintFilter) return false;
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       const matchTitle = t.title.toLowerCase().includes(q);
       const matchDesc = t.description?.toLowerCase().includes(q);
       const matchId = t.id.toLowerCase().includes(q);
-      if (!matchTitle && !matchDesc && !matchId) return false;
+      const matchVersion = t.version?.toLowerCase().includes(q);
+      if (!matchTitle && !matchDesc && !matchId && !matchVersion) return false;
     }
     return true;
   });
 
-  const handleOpenCreateTask = (statusId: string = 'TASK_STAT_BACKLOG') => {
+  const handleOpenCreateTask = (statusId: string = 'TASK_STAT_BACKLOG', sprintId?: string | null) => {
     setSelectedTask(null);
     setTargetColumnId(statusId);
+    setDefaultSprintId(sprintId ?? null);
     setIsTaskModalOpen(true);
   };
 
@@ -110,12 +143,18 @@ export const ProjectBoard: React.FC = () => {
     typeId: string;
     statusId?: string;
     priorityId?: string;
+    sprintId?: string | null;
+    version?: string | null;
     dueDate?: number;
   }) => {
     if (selectedTask) {
       return await updateTask(selectedTask.id, data);
     } else {
-      return await createTask({ ...data, statusId: targetColumnId });
+      return await createTask({
+        ...data,
+        statusId: data.statusId || targetColumnId,
+        sprintId: data.sprintId ?? defaultSprintId,
+      });
     }
   };
 
@@ -186,10 +225,43 @@ export const ProjectBoard: React.FC = () => {
           </div>
         </div>
 
+        {/* Center: Jira-Style Dual Tabs (Board vs Backlog) */}
+        <div className="flex items-center bg-black/[0.04] p-1 rounded-xl border border-black/[0.03]">
+          <button
+            type="button"
+            onClick={() => setViewTab('board')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              viewTab === 'board'
+                ? 'bg-white text-[#1D1D1F] shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>Board</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTab('backlog')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              viewTab === 'backlog'
+                ? 'bg-white text-[#1D1D1F] shadow-xs'
+                : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Backlog</span>
+            {tasks.length > 0 && (
+              <span className="font-mono text-[10px] px-1.5 py-0.2 bg-black/[0.06] rounded-md text-[#1D1D1F]">
+                {tasks.length}
+              </span>
+            )}
+          </button>
+        </div>
+
         {/* Right: Progress Meter & Action Buttons */}
         <div className="flex items-center gap-3">
           {/* Progress Indicator */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-black/[0.06] shadow-xs text-xs">
+          <div className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-black/[0.06] shadow-xs text-xs">
             <div className="w-16 h-2 bg-black/[0.05] rounded-full overflow-hidden p-[1px]">
               <div
                 className="h-full bg-[#0071E3] rounded-full transition-all duration-300"
@@ -216,7 +288,7 @@ export const ProjectBoard: React.FC = () => {
               trigger={
                 <button
                   type="button"
-                  className="p-2 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors border border-black/[0.06] shadow-xs bg-white"
+                  className="p-2 rounded-xl text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.04] transition-colors border border-black/[0.06] shadow-xs bg-white cursor-pointer"
                   title="Project settings"
                 >
                   <MoreVertical className="w-3.5 h-3.5" />
@@ -244,10 +316,25 @@ export const ProjectBoard: React.FC = () => {
             />
           )}
 
+          {/* New Sprint Button (Backlog tab) */}
+          {viewTab === 'backlog' && (
+            <button
+              onClick={() => {
+                setEditingSprint(null);
+                setSprintModalMode('create');
+                setIsSprintModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-black/[0.03] text-[#1D1D1F] text-xs font-semibold rounded-xl border border-black/[0.08] shadow-2xs transition-all active:scale-95 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#0071E3]" />
+              <span>Sprint / Version</span>
+            </button>
+          )}
+
           {/* New Task Button */}
           <button
             onClick={() => handleOpenCreateTask('TASK_STAT_BACKLOG')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold rounded-xl shadow-[0_1px_3px_rgba(0,113,227,0.3)] transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Task</span>
@@ -255,133 +342,239 @@ export const ProjectBoard: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Compact Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 flex-shrink-0 gap-2.5">
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Search filter input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-2 w-3.5 h-3.5 text-[#86868B]" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter tasks..."
-              className="pl-8 pr-3 py-1.5 bg-white border border-black/[0.08] hover:border-black/[0.14] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] w-48 sm:w-56 transition-colors shadow-2xs font-mono"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1.5 text-[#86868B] hover:text-[#1D1D1F] text-xs"
-              >
-                ×
-              </button>
+      {/* 2. Content View: Board Tab vs Backlog Tab */}
+      {viewTab === 'board' ? (
+        <>
+          {/* Compact Filter Toolbar for Board */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1 flex-shrink-0 gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Search filter input */}
+              <div className="relative">
+                <Search className="absolute left-3 top-2 w-3.5 h-3.5 text-[#86868B]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Filter tasks, versions..."
+                  className="pl-8 pr-3 py-1.5 bg-white border border-black/[0.08] hover:border-black/[0.14] focus:border-[#0071E3] rounded-xl text-xs text-[#1D1D1F] placeholder-[#86868B] w-48 sm:w-56 transition-colors shadow-2xs font-mono"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1.5 text-[#86868B] hover:text-[#1D1D1F] text-xs"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              {/* Sprint Filter */}
+              {sprints.length > 0 && (
+                <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+                  <select
+                    value={sprintFilter}
+                    onChange={(e) => setSprintFilter(e.target.value)}
+                    className="bg-transparent text-xs text-[#1D1D1F] font-medium border-0 focus:ring-0 px-2 py-0.5 cursor-pointer"
+                  >
+                    <option value="ALL">All Sprints & Backlog</option>
+                    <option value="NONE">Unassigned (Backlog Only)</option>
+                    {sprints.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} {s.version ? `(${s.version})` : ''} [{s.status}]
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Type Filter Segmented Control */}
+              <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+                <button
+                  onClick={() => setTypeFilter('ALL')}
+                  className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                    typeFilter === 'ALL'
+                      ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                      : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+                  }`}
+                >
+                  All Types
+                </button>
+                {taskTypes.map((t: Lookup) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTypeFilter(t.id)}
+                    className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                      typeFilter === t.id
+                        ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                        : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Priority Filter */}
+              <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
+                <button
+                  onClick={() => setPriorityFilter('ALL')}
+                  className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                    priorityFilter === 'ALL'
+                      ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                      : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+                  }`}
+                >
+                  All Priorities
+                </button>
+                {priorities.map((p: Lookup) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setPriorityFilter(p.id)}
+                    className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
+                      priorityFilter === p.id
+                        ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
+                        : 'text-[#6E6E73] hover:text-[#1D1D1F]'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Counter */}
+            <div className="text-[11px] font-mono text-[#86868B]">
+              Showing <span className="text-[#1D1D1F] font-semibold">{filteredTasks.length}</span> of {tasks.length} tasks
+            </div>
+          </div>
+
+          {/* 6-Lane Kanban Board Surface */}
+          <div className="flex-1 pt-1 overflow-hidden">
+            {isLoading && (
+              <div className="h-full flex items-center justify-center text-xs font-mono text-[#86868B]">
+                Loading Kanban board...
+              </div>
+            )}
+
+            {error && !isLoading && (
+              <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center justify-between">
+                <span>{error}</span>
+                <button
+                  onClick={() => refetch()}
+                  className="text-white bg-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-500 shadow-xs cursor-pointer"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {!isLoading && !error && (
+              <Board
+                statuses={taskStatuses}
+                tasks={filteredTasks}
+                onTaskClick={(task) => setSelectedTaskForDetails(task)}
+                onTaskDrop={handleDropTask}
+                onAddTask={handleOpenCreateTask}
+                onRecordLearning={(task) => setLearningModalTask(task)}
+              />
             )}
           </div>
-
-          {/* Type Filter Segmented Control */}
-          <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
-            <button
-              onClick={() => setTypeFilter('ALL')}
-              className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
-                typeFilter === 'ALL'
-                  ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-              }`}
-            >
-              All Types
-            </button>
-            {taskTypes.map((t: Lookup) => (
-              <button
-                key={t.id}
-                onClick={() => setTypeFilter(t.id)}
-                className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
-                  typeFilter === t.id
-                    ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
-                    : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Priority Filter */}
-          <div className="flex items-center bg-black/[0.04] rounded-xl p-1 gap-1 border border-black/[0.03]">
-            <button
-              onClick={() => setPriorityFilter('ALL')}
-              className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
-                priorityFilter === 'ALL'
-                  ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-              }`}
-            >
-              All Priorities
-            </button>
-            {priorities.map((p: Lookup) => (
-              <button
-                key={p.id}
-                onClick={() => setPriorityFilter(p.id)}
-                className={`px-2.5 py-1 text-xs rounded-lg transition-all ${
-                  priorityFilter === p.id
-                    ? 'bg-white text-[#1D1D1F] font-semibold shadow-xs'
-                    : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Counter */}
-        <div className="text-[11px] font-mono text-[#86868B]">
-          Showing <span className="text-[#1D1D1F] font-semibold">{filteredTasks.length}</span> of {tasks.length} tasks
-        </div>
-      </div>
-
-      {/* 3. 6-Lane Kanban Board Surface */}
-      <div className="flex-1 pt-1 overflow-hidden">
-        {isLoading && (
-          <div className="h-full flex items-center justify-center text-xs font-mono text-[#86868B]">
-            Loading Kanban board...
-          </div>
-        )}
-
-        {error && !isLoading && (
-          <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center justify-between">
-            <span>{error}</span>
-            <button
-              onClick={() => refetch()}
-              className="text-white bg-rose-600 px-3 py-1 rounded-xl text-xs font-medium hover:bg-rose-500 shadow-xs"
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        {!isLoading && !error && (
-          <Board
-            statuses={taskStatuses}
+        </>
+      ) : (
+        /* Backlog & Sprint Versions View */
+        <div className="flex-1 pt-1 overflow-hidden">
+          <BacklogView
             tasks={filteredTasks}
-            onTaskClick={handleOpenEditTask}
-            onTaskDrop={handleDropTask}
-            onAddTask={handleOpenCreateTask}
+            sprints={sprints}
+            taskStatuses={taskStatuses}
+            taskTypes={taskTypes}
+            priorities={priorities}
+            onTaskClick={(task) => setSelectedTaskForDetails(task)}
+            onAddTaskToSprint={(sprintId) => handleOpenCreateTask('TASK_STAT_BACKLOG', sprintId)}
+            onQuickCreateTask={async (title, sprintId) => {
+              const res = await createTask({
+                title,
+                sprintId,
+                typeId: 'TASK_TYPE_FEATURE',
+                statusId: 'TASK_STAT_BACKLOG',
+                priorityId: 'PRIO_MEDIUM',
+              });
+              return res.success;
+            }}
+            onMoveTaskToSprint={(taskId, targetSprintId) => {
+              updateTask(taskId, { sprintId: targetSprintId });
+            }}
+            onOpenCreateSprint={() => {
+              setEditingSprint(null);
+              setSprintModalMode('create');
+              setIsSprintModalOpen(true);
+            }}
+            onEditSprint={(sprint) => {
+              setEditingSprint(sprint);
+              setSprintModalMode('edit');
+              setIsSprintModalOpen(true);
+            }}
+            onDeleteSprint={async (sprintId) => {
+              await deleteSprint(sprintId);
+            }}
+            onUpdateSprintStatus={async (sprintId, status) => {
+              await updateSprint(sprintId, { status });
+            }}
+            onDeleteTask={(taskId) => deleteTask(taskId)}
             onRecordLearning={(task) => setLearningModalTask(task)}
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Task Modal (Create / Edit) */}
+      {/* Task Details Modal (Opened when clicking any task on Board or Backlog) */}
+      <TaskDetailsModal
+        isOpen={selectedTaskForDetails !== null}
+        task={selectedTaskForDetails}
+        sprint={sprints.find((s) => s.id === selectedTaskForDetails?.sprintId) || null}
+        onClose={() => setSelectedTaskForDetails(null)}
+        onEdit={(task) => {
+          setSelectedTaskForDetails(null);
+          handleOpenEditTask(task);
+        }}
+        onDelete={(task) => {
+          setSelectedTaskForDetails(null);
+          deleteTask(task.id);
+        }}
+        onRecordLearning={(task) => {
+          setSelectedTaskForDetails(null);
+          setLearningModalTask(task);
+        }}
+      />
+
+      {/* Task Modal (Create / Edit form) */}
       <TaskModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         task={selectedTask}
         defaultStatusId={targetColumnId}
+        defaultSprintId={defaultSprintId}
+        sprints={sprints}
         taskTypes={taskTypes}
         taskStatuses={taskStatuses}
         priorities={priorities}
         onSaveTask={handleSaveTask}
         onDeleteTask={deleteTask}
+      />
+
+      {/* Sprint Modal (Create / Edit sprint & version) */}
+      <SprintModal
+        isOpen={isSprintModalOpen}
+        mode={sprintModalMode}
+        sprint={editingSprint}
+        onClose={() => setIsSprintModalOpen(false)}
+        onSubmit={async (data) => {
+          if (sprintModalMode === 'create') {
+            return await createSprint(data);
+          } else if (editingSprint) {
+            return await updateSprint(editingSprint.id, data);
+          }
+          return { success: false, error: 'Invalid sprint state' };
+        }}
       />
 
       {/* Instant Task-Linked Learning Modal */}

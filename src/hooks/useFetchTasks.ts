@@ -8,6 +8,8 @@ export interface UpdateTaskPayload {
   typeId?: string;
   statusId?: string;
   priorityId?: string;
+  sprintId?: string | null;
+  version?: string | null;
   position?: number;
   dueDate?: number;
   completedAt?: number | null;
@@ -37,6 +39,8 @@ export const useFetchTasks = (projectId?: string) => {
     typeId: string;
     statusId?: string;
     priorityId?: string;
+    sprintId?: string | null;
+    version?: string | null;
     dueDate?: number;
   }) => {
     if (!projectId) return { success: false, error: 'No project selected' };

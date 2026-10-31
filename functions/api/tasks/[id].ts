@@ -59,6 +59,8 @@ export const onRequestPut: PagesFunction<Env, 'id', EventContextData> = async (c
       typeId?: string;
       statusId?: string;
       priorityId?: string;
+      sprintId?: string | null;
+      version?: string | null;
       position?: number;
       dueDate?: number;
       completedAt?: number | null;
@@ -87,6 +89,8 @@ export const onRequestPut: PagesFunction<Env, 'id', EventContextData> = async (c
     if (body.description !== undefined) updates.description = body.description?.trim() || null;
     if (body.typeId !== undefined) updates.typeId = body.typeId;
     if (body.priorityId !== undefined) updates.priorityId = body.priorityId;
+    if (body.sprintId !== undefined) updates.sprintId = body.sprintId || null;
+    if (body.version !== undefined) updates.version = body.version?.trim() || null;
     if (body.position !== undefined) updates.position = body.position;
     if (body.dueDate !== undefined) updates.dueDate = normalizeToDate(body.dueDate);
     if (body.completedAt !== undefined) updates.completedAt = normalizeToDate(body.completedAt);

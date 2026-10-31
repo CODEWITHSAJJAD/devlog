@@ -69,6 +69,8 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
   try {
     const body = (await request.json()) as {
       projectId?: string;
+      sprintId?: string | null;
+      version?: string | null;
       title?: string;
       description?: string;
       typeId?: string;
@@ -127,6 +129,8 @@ export const onRequestPost: PagesFunction<Env, any, EventContextData> = async (c
       id: taskId,
       projectId: body.projectId,
       userId: data.userId,
+      sprintId: body.sprintId || null,
+      version: body.version?.trim() || null,
       title: body.title.trim(),
       description: body.description?.trim() || null,
       typeId,
