@@ -81,7 +81,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       subtitle={`Ticket Identifier: ${shortId}`}
       maxWidth="max-w-2xl"
     >
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Status, Priority, Type & Sprint Bar */}
         <div className="flex items-center gap-2 flex-wrap pb-4 border-b border-black/[0.06]">
           <Badge
@@ -130,7 +130,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <span className="text-[10px] font-mono text-[#86868B]">Multiline Markdown</span>
             )}
           </h4>
-          <div className="p-3.5 sm:p-4 bg-[#F5F5F7] border border-black/[0.06] rounded-xl text-xs text-[#1D1D1F] leading-relaxed break-words min-h-[5.5rem] max-h-48 sm:max-h-60 overflow-y-auto pr-2.5">
+          <div className="p-3.5 sm:p-4 bg-[#F5F5F7] border border-black/[0.06] rounded-xl text-xs text-[#1D1D1F] leading-relaxed break-words min-h-[3rem] max-h-40 sm:max-h-52 overflow-y-auto pr-2.5">
             {task.description ? (
               <MarkdownViewer content={task.description} />
             ) : (
@@ -196,19 +196,19 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </div>
 
           {learnings.length > 0 ? (
-            <div className="space-y-2 max-h-52 sm:max-h-64 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-44 sm:max-h-56 overflow-y-auto pr-1">
               {learnings.map((l) => (
                 <div
                   key={l.id}
                   className="p-3 bg-white border border-black/[0.06] rounded-xl text-xs space-y-1 shadow-2xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-[#1D1D1F]">{l.title}</span>
-                    <span className="text-[10px] font-mono text-[#86868B]">
+                    <span className="font-semibold text-[#1D1D1F] truncate pr-2">{l.title}</span>
+                    <span className="text-[10px] font-mono text-[#86868B] shrink-0">
                       {formatDate(l.createdAt)}
                     </span>
                   </div>
-                  <p className="text-[#6E6E73] text-[11px] line-clamp-3 leading-relaxed">
+                  <p className="text-[#6E6E73] text-[11px] line-clamp-3 leading-relaxed break-words">
                     {l.content}
                   </p>
                   {l.tags && l.tags.length > 0 && (

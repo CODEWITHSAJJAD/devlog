@@ -368,7 +368,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
                     className="fixed inset-0 z-40"
                     onClick={() => setIsTypeDropdownOpen(false)}
                   />
-                  <div className="absolute left-0 top-full mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-black/[0.08] p-1.5 z-50 animate-in fade-in zoom-in-95">
+                  <div className="absolute left-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-[0_16px_36px_rgba(0,0,0,0.18)] border border-black/[0.1] p-1.5 z-50 animate-in fade-in zoom-in-95">
                     <div className="px-2 py-1 text-[10px] font-mono font-bold text-[#86868B] uppercase tracking-wider">
                       Work Item Type
                     </div>
@@ -486,7 +486,7 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5 pb-8 overflow-y-auto max-h-full pr-1">
+    <div className="space-y-4 sm:space-y-5 pb-24 overflow-y-auto max-h-full pr-1">
       {/* 1. Header Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-white border border-black/[0.06] rounded-2xl shadow-2xs">
         <div>
@@ -534,14 +534,14 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
                   onMoveTaskToSprint(taskId, sprint.id);
                 }
               }}
-              className={`rounded-2xl border transition-all overflow-hidden ${
+              className={`rounded-2xl border transition-all ${
                 isDragTarget
                   ? 'border-[#0071E3] bg-[#E8F2FE]/40 ring-2 ring-[#0071E3]/20 shadow-md'
                   : 'bg-[#F9F9FB] border-black/[0.06]'
               }`}
             >
               {/* Sprint Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-white border-b border-black/[0.05] gap-2.5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between p-3.5 bg-white border-b border-black/[0.05] gap-2.5 rounded-t-2xl">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <button
                     onClick={() => toggleSprintCollapse(sprint.id)}
@@ -696,14 +696,14 @@ export const BacklogView: React.FC<BacklogViewProps> = ({
             onMoveTaskToSprint(taskId, null);
           }
         }}
-        className={`rounded-2xl border transition-all overflow-hidden ${
+        className={`rounded-2xl border transition-all ${
           dragOverSection === 'BACKLOG'
             ? 'border-[#0071E3] bg-[#E8F2FE]/40 ring-2 ring-[#0071E3]/20 shadow-md'
             : 'bg-[#F9F9FB] border-black/[0.06]'
         }`}
       >
         {/* Backlog Header */}
-        <div className="flex items-center justify-between p-3.5 bg-white border-b border-black/[0.05]">
+        <div className="flex items-center justify-between p-3.5 bg-white border-b border-black/[0.05] rounded-t-2xl">
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsBacklogCollapsed((prev) => !prev)}

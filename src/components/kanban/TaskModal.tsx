@@ -421,27 +421,27 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               )}
 
               {/* List of Existing Learnings for this Task */}
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
                 {learnings.map((l) => (
                   <div
                     key={l.id}
                     className="p-4 bg-[#F5F5F7] border border-black/[0.06] rounded-xl space-y-2 shadow-2xs"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-[#1D1D1F]">{l.title}</span>
+                      <span className="text-xs font-semibold text-[#1D1D1F] truncate pr-2">{l.title}</span>
                       <button
                         type="button"
                         onClick={async () => {
                           await deleteLearning(l.id);
                           refetchLearnings();
                         }}
-                        className="text-[#86868B] hover:text-rose-600 p-1 rounded-lg transition-colors"
+                        className="text-[#86868B] hover:text-rose-600 p-1 rounded-lg transition-colors cursor-pointer shrink-0"
                         title="Delete learning"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    <MarkdownViewer content={l.content} className="text-xs text-[#1D1D1F]" />
+                    <MarkdownViewer content={l.content} className="text-xs text-[#1D1D1F] break-words" />
                     {l.tags && l.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 pt-2 border-t border-black/[0.04]">
                         {l.tags.map((tag) => (
